@@ -2,16 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../../data/models/task_entity.dart';
 
-/// List panel styled like Google Tasks: header row + empty state or task list.
 class TaskListCard extends StatelessWidget {
   const TaskListCard({
     super.key,
     required this.title,
     required this.tasks,
+    this.onRenameList,
+    this.onDeleteList,
+    this.onDeleteAllCompleted,
+    this.completedTaskCount = 0,
   });
 
   final String title;
   final List<TaskEntity> tasks;
+  final VoidCallback? onRenameList;
+  final VoidCallback? onDeleteList;
+  final VoidCallback? onDeleteAllCompleted;
+  final int completedTaskCount;
 
   static const _darkCard = Color(0xFF251812);
   static const _darkAccent = Color(0xFFE8C4B8);
@@ -21,7 +28,7 @@ class TaskListCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final cardColor =
-        isDark ? _darkCard : theme.colorScheme.surfaceContainerHighest;
+    isDark ? _darkCard : theme.colorScheme.surfaceContainerHighest;
     final subtle = isDark
         ? _darkAccent.withValues(alpha: 0.88)
         : theme.colorScheme.onSurfaceVariant;
@@ -61,7 +68,15 @@ class TaskListCard extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.more_vert),
                     color: subtle,
-                    onPressed: () {},
+                    onPressed: () => _showTaskListOverflowMenu(
+                      context,
+                      theme: theme,
+                      isDark: isDark,
+                      onRenameList: onRenameList,
+                      onDeleteList: onDeleteList,
+                      onDeleteAllCompleted: onDeleteAllCompleted,
+                      canDeleteCompleted: completedTaskCount > 0,
+                    ),
                   ),
                 ],
               ),
@@ -70,22 +85,117 @@ class TaskListCard extends StatelessWidget {
               child: tasks.isEmpty
                   ? _EmptyTasksBody(subtle: subtle, theme: theme)
                   : ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      itemCount: tasks.length,
-                      itemBuilder: (context, index) {
-                        final t = tasks[index];
-                        return ListTile(
-                          title: Text(t.title),
-                          leading: const Icon(Icons.radio_button_unchecked),
-                        );
-                      },
-                    ),
+                padding: const EdgeInsets.only(bottom: 16),
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final t = tasks[index];
+                  return ListTile(
+                    title: Text(t.title),
+                    leading: const Icon(Icons.radio_button_unchecked),
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+void _showTaskListOverflowMenu(
+    BuildContext context, {
+      required ThemeData theme,
+      required bool isDark,
+      VoidCallback? onRenameList,
+      VoidCallback? onDeleteList,
+      VoidCallback? onDeleteAllCompleted,
+      required bool canDeleteCompleted,
+    }) {
+  final sheetBg = isDark
+      ? TaskListCard._darkCard
+      : theme.colorScheme.surfaceContainerHigh;
+  final onPrimary = theme.colorScheme.onSurface;
+  final muted = theme.colorScheme.onSurfaceVariant;
+
+  showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: sheetBg,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (ctx) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _overflowMenuTile(
+              context: ctx,
+              label: 'Rename list',
+              enabled: onRenameList != null,
+              textColor: onPrimary,
+              mutedColor: muted,
+              theme: theme,
+              onTap: onRenameList,
+            ),
+            _overflowMenuTile(
+              context: ctx,
+              label: 'Delete list',
+              enabled: onDeleteList != null,
+              textColor: onPrimary,
+              mutedColor: muted,
+              theme: theme,
+              onTap: onDeleteList,
+            ),
+            _overflowMenuTile(
+              context: ctx,
+              label: 'Delete all completed tasks',
+              enabled: canDeleteCompleted && onDeleteAllCompleted != null,
+              textColor: onPrimary,
+              mutedColor: muted,
+              theme: theme,
+              onTap: onDeleteAllCompleted,
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Widget _overflowMenuTile({
+  required BuildContext context,
+  required String label,
+  required bool enabled,
+  required Color textColor,
+  required Color mutedColor,
+  required ThemeData theme,
+  VoidCallback? onTap,
+}) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: enabled
+          ? () {
+        Navigator.of(context).pop();
+        onTap?.call();
+      }
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Text(
+            label,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: enabled ? textColor : mutedColor,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _EmptyTasksBody extends StatelessWidget {
