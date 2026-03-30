@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_todo_clone/features/task/home/presentation/widgets/home/task_list_card.dart';
+import 'package:google_todo_clone/features/task/presentation/widgets/home/task_list_card.dart';
 
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';

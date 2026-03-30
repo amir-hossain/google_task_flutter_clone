@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../data/models/tab_entry.dart';
+import '../../../data/models/tab_entry.dart';
 
 class NewTaskBottomSheet extends StatefulWidget {
   const NewTaskBottomSheet({

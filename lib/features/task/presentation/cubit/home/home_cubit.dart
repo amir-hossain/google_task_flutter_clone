@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../data/models/tab_entry.dart';
-import '../../../../data/models/task_entity.dart';
+import '../../../data/models/tab_entry.dart';
+import '../../../data/models/task_entity.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {

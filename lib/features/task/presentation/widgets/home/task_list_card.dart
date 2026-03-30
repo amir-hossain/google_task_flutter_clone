@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../data/models/task_entity.dart';
+import '../../../data/models/task_entity.dart';
 
 /// List panel styled like Google Tasks: header row + empty state or task list.
 class TaskListCard extends StatelessWidget {
