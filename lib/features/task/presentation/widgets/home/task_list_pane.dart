@@ -14,6 +14,7 @@ class FavouriteTaskListPane extends StatelessWidget {
     return const TaskListCard(
       title: 'Starred',
       tasks: [],
+      tabIndex: 0,
     );
   }
 }
@@ -38,7 +39,11 @@ class TaskListPane extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final tab = state.tabs[tabIndex];
-        return TaskListCard(title: tab.tabName, tasks: tab.tasks);
+        return TaskListCard(
+          title: tab.tabName,
+          tasks: tab.tasks,
+          tabIndex: tabIndex,
+        );
       },
     );
   }

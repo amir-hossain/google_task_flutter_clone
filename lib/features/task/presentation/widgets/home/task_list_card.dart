@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/models/task_entity.dart';
+import '../../cubit/home/home_cubit.dart';
+import '../../pages/task_edit_page.dart';
 
 class TaskListCard extends StatelessWidget {
   const TaskListCard({
@@ -13,6 +16,7 @@ class TaskListCard extends StatelessWidget {
     this.completedTaskCount = 0,
     this.currentSortLabel = 'My order',
     this.onSortSelected,
+    required this.tabIndex,
   });
 
   final String title;
@@ -23,6 +27,7 @@ class TaskListCard extends StatelessWidget {
   final int completedTaskCount;
   final String currentSortLabel;
   final ValueChanged<String>? onSortSelected;
+  final int tabIndex;
 
   static const _darkCard = Color(0xFF251812);
   static const _darkAccent = Color(0xFFE8C4B8);
@@ -101,6 +106,19 @@ class TaskListCard extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final t = tasks[index];
                   return ListTile(
+                    onTap: () {
+                      Navigator.of(context).push<void>(
+                        MaterialPageRoute<void>(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<HomeCubit>(),
+                            child: TaskEditPage(
+                              tabIndex: tabIndex,
+                              taskId: t.id,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                     title: Text(t.title),
                     leading: const Icon(Icons.radio_button_unchecked),
                   );

@@ -28,4 +28,25 @@ class HomeCubit extends Cubit<HomeState> {
       TabEntry(tabName: name),
     ]));
   }
+
+  void updateTaskTitle({
+    required int tabIndex,
+    required String taskId,
+    required String title,
+  }) {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final nextTitle = title.trim();
+    if (nextTitle.isEmpty) return;
+
+    final tab = state.tabs[tabIndex];
+    final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
+    if (taskIndex < 0) return;
+
+    final nextTasks = List<TaskEntity>.from(tab.tasks);
+    nextTasks[taskIndex] = nextTasks[taskIndex].copyWith(title: nextTitle);
+
+    final nextTabs = List<TabEntry>.from(state.tabs);
+    nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
+    emit(state.copyWith(tabs: nextTabs));
+  }
 }
