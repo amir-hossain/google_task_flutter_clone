@@ -11,6 +11,8 @@ class TaskListCard extends StatelessWidget {
     this.onDeleteList,
     this.onDeleteAllCompleted,
     this.completedTaskCount = 0,
+    this.currentSortLabel = 'My order',
+    this.onSortSelected,
   });
 
   final String title;
@@ -19,6 +21,8 @@ class TaskListCard extends StatelessWidget {
   final VoidCallback? onDeleteList;
   final VoidCallback? onDeleteAllCompleted;
   final int completedTaskCount;
+  final String currentSortLabel;
+  final ValueChanged<String>? onSortSelected;
 
   static const _darkCard = Color(0xFF251812);
   static const _darkAccent = Color(0xFFE8C4B8);
@@ -27,8 +31,9 @@ class TaskListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final cardColor =
-    isDark ? _darkCard : theme.colorScheme.surfaceContainerHighest;
+    final cardColor = isDark
+        ? _darkCard
+        : theme.colorScheme.surfaceContainerHighest;
     final subtle = isDark
         ? _darkAccent.withValues(alpha: 0.88)
         : theme.colorScheme.onSurfaceVariant;
@@ -63,7 +68,13 @@ class TaskListCard extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.swap_vert),
                     color: subtle,
-                    onPressed: () {},
+                    onPressed: () => _showTaskListSortMenu(
+                      context,
+                      theme: theme,
+                      isDark: isDark,
+                      selectedLabel: currentSortLabel,
+                      onSortSelected: onSortSelected,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.more_vert),
@@ -112,6 +123,62 @@ void _showTaskListOverflowMenu(
       VoidCallback? onDeleteAllCompleted,
       required bool canDeleteCompleted,
     }) {
+  _showTaskListActionSheet(
+    context,
+    theme: theme,
+    isDark: isDark,
+    items: [
+      _TaskListSheetItem(
+        label: 'Rename list',
+        enabled: onRenameList != null,
+        onTap: onRenameList,
+      ),
+      _TaskListSheetItem(
+        label: 'Delete list',
+        enabled: onDeleteList != null,
+        onTap: onDeleteList,
+      ),
+      _TaskListSheetItem(
+        label: 'Delete all completed tasks',
+        enabled: canDeleteCompleted && onDeleteAllCompleted != null,
+        onTap: onDeleteAllCompleted,
+      ),
+    ],
+  );
+}
+
+void _showTaskListSortMenu(
+    BuildContext context, {
+      required ThemeData theme,
+      required bool isDark,
+      required String selectedLabel,
+      ValueChanged<String>? onSortSelected,
+    }) {
+  const options = ['My order', 'Date', 'Deadline', 'Starred recently', 'Title'];
+
+  _showTaskListActionSheet(
+    context,
+    theme: theme,
+    isDark: isDark,
+    header: 'Sort by',
+    items: [
+      for (final option in options)
+        _TaskListSheetItem(
+          label: option,
+          selected: option == selectedLabel,
+          onTap: () => onSortSelected?.call(option),
+        ),
+    ],
+  );
+}
+
+void _showTaskListActionSheet(
+    BuildContext context, {
+      required ThemeData theme,
+      required bool isDark,
+      String? header,
+      required List<_TaskListSheetItem> items,
+    }) {
   final sheetBg = isDark
       ? TaskListCard._darkCard
       : theme.colorScheme.surfaceContainerHigh;
@@ -130,33 +197,28 @@ void _showTaskListOverflowMenu(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _overflowMenuTile(
-              context: ctx,
-              label: 'Rename list',
-              enabled: onRenameList != null,
-              textColor: onPrimary,
-              mutedColor: muted,
-              theme: theme,
-              onTap: onRenameList,
-            ),
-            _overflowMenuTile(
-              context: ctx,
-              label: 'Delete list',
-              enabled: onDeleteList != null,
-              textColor: onPrimary,
-              mutedColor: muted,
-              theme: theme,
-              onTap: onDeleteList,
-            ),
-            _overflowMenuTile(
-              context: ctx,
-              label: 'Delete all completed tasks',
-              enabled: canDeleteCompleted && onDeleteAllCompleted != null,
-              textColor: onPrimary,
-              mutedColor: muted,
-              theme: theme,
-              onTap: onDeleteAllCompleted,
-            ),
+            if (header != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                child: Text(
+                  header,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: onPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            for (final item in items)
+              _overflowMenuTile(
+                context: ctx,
+                label: item.label,
+                enabled: item.enabled,
+                selected: item.selected,
+                textColor: onPrimary,
+                mutedColor: muted,
+                theme: theme,
+                onTap: item.onTap,
+              ),
           ],
         ),
       );
@@ -168,6 +230,7 @@ Widget _overflowMenuTile({
   required BuildContext context,
   required String label,
   required bool enabled,
+  required bool selected,
   required Color textColor,
   required Color mutedColor,
   required ThemeData theme,
@@ -184,25 +247,45 @@ Widget _overflowMenuTile({
           : null,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-        child: Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: Text(
-            label,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: enabled ? textColor : mutedColor,
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: enabled ? textColor : mutedColor,
+                ),
+              ),
             ),
-          ),
+            if (selected)
+              Icon(
+                Icons.check,
+                color: enabled ? textColor : mutedColor,
+                size: 20,
+              ),
+          ],
         ),
       ),
     ),
   );
 }
 
-class _EmptyTasksBody extends StatelessWidget {
-  const _EmptyTasksBody({
-    required this.subtle,
-    required this.theme,
+class _TaskListSheetItem {
+  const _TaskListSheetItem({
+    required this.label,
+    this.enabled = true,
+    this.selected = false,
+    this.onTap,
   });
+
+  final String label;
+  final bool enabled;
+  final bool selected;
+  final VoidCallback? onTap;
+}
+
+class _EmptyTasksBody extends StatelessWidget {
+  const _EmptyTasksBody({required this.subtle, required this.theme});
 
   final Color subtle;
   final ThemeData theme;
