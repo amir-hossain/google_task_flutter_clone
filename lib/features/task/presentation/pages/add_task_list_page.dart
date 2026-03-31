@@ -19,7 +19,7 @@ class _AddTaskListPageState extends State<AddTaskListPage> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
     final name = _controller.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -27,7 +27,8 @@ class _AddTaskListPageState extends State<AddTaskListPage> {
       );
       return;
     }
-    context.read<HomeCubit>().addTab(name);
+    await context.read<HomeCubit>().addTab(name);
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 

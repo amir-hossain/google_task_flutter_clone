@@ -1,11 +1,27 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/datasources/local_task_datasource.dart';
 import '../../../data/models/tab_ui_model.dart';
 import '../../../data/models/task_ui_model.dart';
+import '../../../data/repositories/task_repository_impl.dart';
+import '../../../domain/usecases/get_task_tabs_usecase.dart';
+import '../../../domain/usecases/save_task_tab_usecase.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState.init());
+  HomeCubit({
+    SaveTaskTabUseCase? saveTaskTabUseCase,
+    GetTaskTabsUseCase? getTaskTabsUseCase,
+  })  : _saveTaskTabUseCase = saveTaskTabUseCase ??
+      SaveTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _getTaskTabsUseCase = getTaskTabsUseCase ??
+            GetTaskTabsUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        super(HomeState.init()) {
+    _loadTabs();
+  }
+
+  final SaveTaskTabUseCase _saveTaskTabUseCase;
+  final GetTaskTabsUseCase _getTaskTabsUseCase;
 
   void addTask(int tabIndex, String title) {
     final name = title.trim();
@@ -20,13 +36,11 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(tabs: next));
   }
 
-  void addTab(String tabName) {
+  Future<void> addTab(String tabName) async {
     final name = tabName.trim();
     if (name.isEmpty) return;
-    emit(state.copyWith(tabs: [
-      ...state.tabs,
-      TabUiModel(tabName: name),
-    ]));
+    final savedTab = await _saveTaskTabUseCase(name);
+    emit(state.copyWith(tabs: [...state.tabs, savedTab]));
   }
 
   void updateTaskTitle({
@@ -48,5 +62,11 @@ class HomeCubit extends Cubit<HomeState> {
     final nextTabs = List<TabUiModel>.from(state.tabs);
     nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
     emit(state.copyWith(tabs: nextTabs));
+  }
+
+  Future<void> _loadTabs() async {
+    final savedTabs = await _getTaskTabsUseCase();
+    if (savedTabs.isEmpty) return;
+    emit(state.copyWith(tabs: savedTabs));
   }
 }
