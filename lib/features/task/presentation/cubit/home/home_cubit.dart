@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/datasources/local_task_datasource.dart';
@@ -5,6 +7,7 @@ import '../../../data/models/tab_ui_model.dart';
 import '../../../data/models/task_ui_model.dart';
 import '../../../data/repositories/task_repository_impl.dart';
 import '../../../domain/usecases/get_task_tabs_usecase.dart';
+import '../../../domain/usecases/save_task_usecase.dart';
 import '../../../domain/usecases/save_task_tab_usecase.dart';
 import 'home_state.dart';
 
@@ -12,20 +15,25 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     SaveTaskTabUseCase? saveTaskTabUseCase,
     GetTaskTabsUseCase? getTaskTabsUseCase,
+    SaveTaskUseCase? saveTaskUseCase,
   })  : _saveTaskTabUseCase = saveTaskTabUseCase ??
       SaveTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
         _getTaskTabsUseCase = getTaskTabsUseCase ??
             GetTaskTabsUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _saveTaskUseCase = saveTaskUseCase ??
+            SaveTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
         super(HomeState.init()) {
     _loadTabs();
   }
 
   final SaveTaskTabUseCase _saveTaskTabUseCase;
   final GetTaskTabsUseCase _getTaskTabsUseCase;
+  final SaveTaskUseCase _saveTaskUseCase;
 
   void addTask(int tabIndex, String title) {
     final name = title.trim();
     if (name.isEmpty) return;
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
     final tab = state.tabs[tabIndex];
     final task = TaskUiModel(
       id: '${DateTime.now().microsecondsSinceEpoch}',
@@ -33,6 +41,9 @@ class HomeCubit extends Cubit<HomeState> {
     );
     final next = List<TabUiModel>.from(state.tabs);
     next[tabIndex] = tab.copyWith(tasks: [...tab.tasks, task]);
+    if (tab.id != null) {
+      unawaited(_saveTaskUseCase(tabId: tab.id!, task: task));
+    }
     emit(state.copyWith(tabs: next));
   }
 
