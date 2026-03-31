@@ -14,28 +14,28 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- List<TabEntry> get tabs;
-/// Create a copy of HomeState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>(this as HomeState, _$identity);
+  List<TabUiModel> get tabs;
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>(this as HomeState, _$identity);
 
 
 
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&const DeepCollectionEquality().equals(other.tabs, tabs));
-}
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&const DeepCollectionEquality().equals(other.tabs, tabs));
+  }
 
 
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tabs));
+  @override
+  int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tabs));
 
-@override
-String toString() {
-  return 'HomeState(tabs: $tabs)';
-}
+  @override
+  String toString() {
+    return 'HomeState(tabs: $tabs)';
+  }
 
 
 }
@@ -43,10 +43,10 @@ String toString() {
 /// @nodoc
 abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
-@useResult
-$Res call({
- List<TabEntry> tabs
-});
+  @useResult
+  $Res call({
+    List<TabUiModel> tabs
+  });
 
 
 
@@ -60,145 +60,145 @@ class _$HomeStateCopyWithImpl<$Res>
   final HomeState _self;
   final $Res Function(HomeState) _then;
 
-/// Create a copy of HomeState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tabs = null,}) {
-  return _then(_self.copyWith(
-tabs: null == tabs ? _self.tabs : tabs // ignore: cast_nullable_to_non_nullable
-as List<TabEntry>,
-  ));
-}
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline') @override $Res call({Object? tabs = null,}) {
+    return _then(_self.copyWith(
+      tabs: null == tabs ? _self.tabs : tabs // ignore: cast_nullable_to_non_nullable
+      as List<TabUiModel>,
+    ));
+  }
 
 }
 
 
 /// Adds pattern-matching-related methods to [HomeState].
 extension HomeStatePatterns on HomeState {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _HomeState value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _HomeState() when $default != null:
-return $default(_that);case _:
+  @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _HomeState value)?  $default,{required TResult orElse(),}){
+  final _that = this;
+  switch (_that) {
+  case _HomeState() when $default != null:
+  return $default(_that);case _:
   return orElse();
 
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
+  }
+  }
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _HomeState value)  $default,){
-final _that = this;
-switch (_that) {
-case _HomeState():
-return $default(_that);case _:
+  @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _HomeState value)  $default,){
+  final _that = this;
+  switch (_that) {
+  case _HomeState():
+  return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
+  }
+  }
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _HomeState value)?  $default,){
-final _that = this;
-switch (_that) {
-case _HomeState() when $default != null:
-return $default(_that);case _:
+  @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _HomeState value)?  $default,){
+  final _that = this;
+  switch (_that) {
+  case _HomeState() when $default != null:
+  return $default(_that);case _:
   return null;
 
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
+  }
+  }
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TabEntry> tabs)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _HomeState() when $default != null:
-return $default(_that.tabs);case _:
+  @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TabUiModel> tabs)?  $default,{required TResult orElse(),}) {final _that = this;
+  switch (_that) {
+  case _HomeState() when $default != null:
+  return $default(_that.tabs);case _:
   return orElse();
 
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
+  }
+  }
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TabEntry> tabs)  $default,) {final _that = this;
-switch (_that) {
-case _HomeState():
-return $default(_that.tabs);case _:
+  @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TabUiModel> tabs)  $default,) {final _that = this;
+  switch (_that) {
+  case _HomeState():
+  return $default(_that.tabs);case _:
   throw StateError('Unexpected subclass');
 
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
+  }
+  }
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TabEntry> tabs)?  $default,) {final _that = this;
-switch (_that) {
-case _HomeState() when $default != null:
-return $default(_that.tabs);case _:
+  @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TabUiModel> tabs)?  $default,) {final _that = this;
+  switch (_that) {
+  case _HomeState() when $default != null:
+  return $default(_that.tabs);case _:
   return null;
 
-}
-}
+  }
+  }
 
 }
 
@@ -206,38 +206,38 @@ return $default(_that.tabs);case _:
 
 
 class _HomeState implements HomeState {
-  const _HomeState({required final  List<TabEntry> tabs}): _tabs = tabs;
-  
-
- final  List<TabEntry> _tabs;
-@override List<TabEntry> get tabs {
-  if (_tabs is EqualUnmodifiableListView) return _tabs;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_tabs);
-}
+  const _HomeState({required final  List<TabUiModel> tabs}): _tabs = tabs;
 
 
-/// Create a copy of HomeState
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeState>(this, _$identity);
+  final  List<TabUiModel> _tabs;
+  @override List<TabUiModel> get tabs {
+    if (_tabs is EqualUnmodifiableListView) return _tabs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tabs);
+  }
+
+
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @override @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeState>(this, _$identity);
 
 
 
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&const DeepCollectionEquality().equals(other._tabs, _tabs));
-}
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&const DeepCollectionEquality().equals(other._tabs, _tabs));
+  }
 
 
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tabs));
+  @override
+  int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tabs));
 
-@override
-String toString() {
-  return 'HomeState(tabs: $tabs)';
-}
+  @override
+  String toString() {
+    return 'HomeState(tabs: $tabs)';
+  }
 
 
 }
@@ -245,10 +245,10 @@ String toString() {
 /// @nodoc
 abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Res> {
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
-@override @useResult
-$Res call({
- List<TabEntry> tabs
-});
+  @override @useResult
+  $Res call({
+    List<TabUiModel> tabs
+  });
 
 
 
@@ -262,14 +262,14 @@ class __$HomeStateCopyWithImpl<$Res>
   final _HomeState _self;
   final $Res Function(_HomeState) _then;
 
-/// Create a copy of HomeState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tabs = null,}) {
-  return _then(_HomeState(
-tabs: null == tabs ? _self._tabs : tabs // ignore: cast_nullable_to_non_nullable
-as List<TabEntry>,
-  ));
-}
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @override @pragma('vm:prefer-inline') $Res call({Object? tabs = null,}) {
+    return _then(_HomeState(
+      tabs: null == tabs ? _self._tabs : tabs // ignore: cast_nullable_to_non_nullable
+      as List<TabUiModel>,
+    ));
+  }
 
 
 }

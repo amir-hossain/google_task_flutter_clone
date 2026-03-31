@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/models/tab_entry.dart';
+import '../../../data/models/tab_ui_model.dart';
 
 class NewTaskBottomSheet extends StatefulWidget {
   const NewTaskBottomSheet({
@@ -10,7 +10,7 @@ class NewTaskBottomSheet extends StatefulWidget {
     required this.onSubmit,
   });
 
-  final List<TabEntry> tabs;
+  final List<TabUiModel> tabs;
   final int initialTabIndex;
   final void Function(int tabIndex, String title) onSubmit;
 
@@ -151,8 +151,8 @@ class _NewTaskBottomSheetState extends State<NewTaskBottomSheet> {
                   TextButton(
                     onPressed: canSave
                         ? () {
-                            widget.onSubmit(_selectedTabIndex, trimmed);
-                          }
+                      widget.onSubmit(_selectedTabIndex, trimmed);
+                    }
                         : null,
                     style: TextButton.styleFrom(
                       foregroundColor: _accent,
@@ -172,7 +172,7 @@ class _NewTaskBottomSheetState extends State<NewTaskBottomSheet> {
 
 Future<void> showNewTaskBottomSheet({
   required BuildContext context,
-  required List<TabEntry> tabs,
+  required List<TabUiModel> tabs,
   required int initialTabIndex,
   required void Function(int tabIndex, String title) onSubmit,
 }) {

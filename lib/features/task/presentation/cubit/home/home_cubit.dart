@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/models/tab_entry.dart';
-import '../../../data/models/task_entity.dart';
+import '../../../data/models/tab_ui_model.dart';
+import '../../../data/models/task_ui_model.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -11,11 +11,11 @@ class HomeCubit extends Cubit<HomeState> {
     final name = title.trim();
     if (name.isEmpty) return;
     final tab = state.tabs[tabIndex];
-    final task = TaskEntity(
+    final task = TaskUiModel(
       id: '${DateTime.now().microsecondsSinceEpoch}',
       title: name,
     );
-    final next = List<TabEntry>.from(state.tabs);
+    final next = List<TabUiModel>.from(state.tabs);
     next[tabIndex] = tab.copyWith(tasks: [...tab.tasks, task]);
     emit(state.copyWith(tabs: next));
   }
@@ -25,7 +25,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (name.isEmpty) return;
     emit(state.copyWith(tabs: [
       ...state.tabs,
-      TabEntry(tabName: name),
+      TabUiModel(tabName: name),
     ]));
   }
 
@@ -42,10 +42,10 @@ class HomeCubit extends Cubit<HomeState> {
     final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
     if (taskIndex < 0) return;
 
-    final nextTasks = List<TaskEntity>.from(tab.tasks);
+    final nextTasks = List<TaskUiModel>.from(tab.tasks);
     nextTasks[taskIndex] = nextTasks[taskIndex].copyWith(title: nextTitle);
 
-    final nextTabs = List<TabEntry>.from(state.tabs);
+    final nextTabs = List<TabUiModel>.from(state.tabs);
     nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
     emit(state.copyWith(tabs: nextTabs));
   }

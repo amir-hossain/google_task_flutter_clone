@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_todo_clone/features/task/data/models/task_ui_model.dart';
 
-import '../../../data/models/task_entity.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../pages/task_edit_page.dart';
 
@@ -20,7 +20,7 @@ class TaskListCard extends StatelessWidget {
   });
 
   final String title;
-  final List<TaskEntity> tasks;
+  final List<TaskUiModel> tasks;
   final VoidCallback? onRenameList;
   final VoidCallback? onDeleteList;
   final VoidCallback? onDeleteAllCompleted;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_todo_clone/features/task/data/models/task_ui_model.dart';
 
-import '../../data/models/task_entity.dart';
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
 
@@ -120,7 +120,7 @@ class TaskEditPage extends StatelessWidget {
     );
   }
 
-  TaskEntity? _findTask(HomeState state) {
+  TaskUiModel? _findTask(HomeState state) {
     if (tabIndex < 0 || tabIndex >= state.tabs.length) return null;
     final tab = state.tabs[tabIndex];
     final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);

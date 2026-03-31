@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'task_entity.dart';
+part of 'task_ui_model.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,20 +12,20 @@ part of 'task_entity.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$TaskEntity {
+mixin _$TaskUiModel {
 
  String get id; String get title;
-/// Create a copy of TaskEntity
+/// Create a copy of TaskUiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$TaskEntityCopyWith<TaskEntity> get copyWith => _$TaskEntityCopyWithImpl<TaskEntity>(this as TaskEntity, _$identity);
+$TaskUiModelCopyWith<TaskUiModel> get copyWith => _$TaskUiModelCopyWithImpl<TaskUiModel>(this as TaskUiModel, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaskEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaskUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
 }
 
 
@@ -34,15 +34,15 @@ int get hashCode => Object.hash(runtimeType,id,title);
 
 @override
 String toString() {
-  return 'TaskEntity(id: $id, title: $title)';
+  return 'TaskUiModel(id: $id, title: $title)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $TaskEntityCopyWith<$Res>  {
-  factory $TaskEntityCopyWith(TaskEntity value, $Res Function(TaskEntity) _then) = _$TaskEntityCopyWithImpl;
+abstract mixin class $TaskUiModelCopyWith<$Res>  {
+  factory $TaskUiModelCopyWith(TaskUiModel value, $Res Function(TaskUiModel) _then) = _$TaskUiModelCopyWithImpl;
 @useResult
 $Res call({
  String id, String title
@@ -53,14 +53,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$TaskEntityCopyWithImpl<$Res>
-    implements $TaskEntityCopyWith<$Res> {
-  _$TaskEntityCopyWithImpl(this._self, this._then);
+class _$TaskUiModelCopyWithImpl<$Res>
+    implements $TaskUiModelCopyWith<$Res> {
+  _$TaskUiModelCopyWithImpl(this._self, this._then);
 
-  final TaskEntity _self;
-  final $Res Function(TaskEntity) _then;
+  final TaskUiModel _self;
+  final $Res Function(TaskUiModel) _then;
 
-/// Create a copy of TaskEntity
+/// Create a copy of TaskUiModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,}) {
   return _then(_self.copyWith(
@@ -73,8 +73,8 @@ as String,
 }
 
 
-/// Adds pattern-matching-related methods to [TaskEntity].
-extension TaskEntityPatterns on TaskEntity {
+/// Adds pattern-matching-related methods to [TaskUiModel].
+extension TaskUiModelPatterns on TaskUiModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -87,10 +87,10 @@ extension TaskEntityPatterns on TaskEntity {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TaskEntity value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TaskUiModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _TaskEntity() when $default != null:
+case _TaskUiModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -109,10 +109,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TaskEntity value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TaskUiModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _TaskEntity():
+case _TaskUiModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -130,10 +130,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TaskEntity value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TaskUiModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _TaskEntity() when $default != null:
+case _TaskUiModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -153,7 +153,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _TaskEntity() when $default != null:
+case _TaskUiModel() when $default != null:
 return $default(_that.id,_that.title);case _:
   return orElse();
 
@@ -174,7 +174,7 @@ return $default(_that.id,_that.title);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title)  $default,) {final _that = this;
 switch (_that) {
-case _TaskEntity():
+case _TaskUiModel():
 return $default(_that.id,_that.title);case _:
   throw StateError('Unexpected subclass');
 
@@ -194,7 +194,7 @@ return $default(_that.id,_that.title);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title)?  $default,) {final _that = this;
 switch (_that) {
-case _TaskEntity() when $default != null:
+case _TaskUiModel() when $default != null:
 return $default(_that.id,_that.title);case _:
   return null;
 
@@ -206,24 +206,24 @@ return $default(_that.id,_that.title);case _:
 /// @nodoc
 
 
-class _TaskEntity implements TaskEntity {
-  const _TaskEntity({required this.id, required this.title});
+class _TaskUiModel implements TaskUiModel {
+  const _TaskUiModel({required this.id, required this.title});
   
 
 @override final  String id;
 @override final  String title;
 
-/// Create a copy of TaskEntity
+/// Create a copy of TaskUiModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$TaskEntityCopyWith<_TaskEntity> get copyWith => __$TaskEntityCopyWithImpl<_TaskEntity>(this, _$identity);
+_$TaskUiModelCopyWith<_TaskUiModel> get copyWith => __$TaskUiModelCopyWithImpl<_TaskUiModel>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaskEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaskUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
 }
 
 
@@ -232,15 +232,15 @@ int get hashCode => Object.hash(runtimeType,id,title);
 
 @override
 String toString() {
-  return 'TaskEntity(id: $id, title: $title)';
+  return 'TaskUiModel(id: $id, title: $title)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$TaskEntityCopyWith<$Res> implements $TaskEntityCopyWith<$Res> {
-  factory _$TaskEntityCopyWith(_TaskEntity value, $Res Function(_TaskEntity) _then) = __$TaskEntityCopyWithImpl;
+abstract mixin class _$TaskUiModelCopyWith<$Res> implements $TaskUiModelCopyWith<$Res> {
+  factory _$TaskUiModelCopyWith(_TaskUiModel value, $Res Function(_TaskUiModel) _then) = __$TaskUiModelCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String title
@@ -251,17 +251,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$TaskEntityCopyWithImpl<$Res>
-    implements _$TaskEntityCopyWith<$Res> {
-  __$TaskEntityCopyWithImpl(this._self, this._then);
+class __$TaskUiModelCopyWithImpl<$Res>
+    implements _$TaskUiModelCopyWith<$Res> {
+  __$TaskUiModelCopyWithImpl(this._self, this._then);
 
-  final _TaskEntity _self;
-  final $Res Function(_TaskEntity) _then;
+  final _TaskUiModel _self;
+  final $Res Function(_TaskUiModel) _then;
 
-/// Create a copy of TaskEntity
+/// Create a copy of TaskUiModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,}) {
-  return _then(_TaskEntity(
+  return _then(_TaskUiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,

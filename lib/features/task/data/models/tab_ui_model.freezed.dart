@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'tab_entry.dart';
+part of 'tab_ui_model.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,20 +12,20 @@ part of 'tab_entry.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$TabEntry {
+mixin _$TabUiModel {
 
- int? get id; String get tabName; List<TaskEntity> get tasks;
-/// Create a copy of TabEntry
+ int? get id; String get tabName; List<TaskUiModel> get tasks;
+/// Create a copy of TabUiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$TabEntryCopyWith<TabEntry> get copyWith => _$TabEntryCopyWithImpl<TabEntry>(this as TabEntry, _$identity);
+$TabUiModelCopyWith<TabUiModel> get copyWith => _$TabUiModelCopyWithImpl<TabUiModel>(this as TabUiModel, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TabEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.tabName, tabName) || other.tabName == tabName)&&const DeepCollectionEquality().equals(other.tasks, tasks));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TabUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tabName, tabName) || other.tabName == tabName)&&const DeepCollectionEquality().equals(other.tasks, tasks));
 }
 
 
@@ -34,18 +34,18 @@ int get hashCode => Object.hash(runtimeType,id,tabName,const DeepCollectionEqual
 
 @override
 String toString() {
-  return 'TabEntry(id: $id, tabName: $tabName, tasks: $tasks)';
+  return 'TabUiModel(id: $id, tabName: $tabName, tasks: $tasks)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $TabEntryCopyWith<$Res>  {
-  factory $TabEntryCopyWith(TabEntry value, $Res Function(TabEntry) _then) = _$TabEntryCopyWithImpl;
+abstract mixin class $TabUiModelCopyWith<$Res>  {
+  factory $TabUiModelCopyWith(TabUiModel value, $Res Function(TabUiModel) _then) = _$TabUiModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, String tabName, List<TaskEntity> tasks
+ int? id, String tabName, List<TaskUiModel> tasks
 });
 
 
@@ -53,29 +53,29 @@ $Res call({
 
 }
 /// @nodoc
-class _$TabEntryCopyWithImpl<$Res>
-    implements $TabEntryCopyWith<$Res> {
-  _$TabEntryCopyWithImpl(this._self, this._then);
+class _$TabUiModelCopyWithImpl<$Res>
+    implements $TabUiModelCopyWith<$Res> {
+  _$TabUiModelCopyWithImpl(this._self, this._then);
 
-  final TabEntry _self;
-  final $Res Function(TabEntry) _then;
+  final TabUiModel _self;
+  final $Res Function(TabUiModel) _then;
 
-/// Create a copy of TabEntry
+/// Create a copy of TabUiModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? tabName = null,Object? tasks = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,tabName: null == tabName ? _self.tabName : tabName // ignore: cast_nullable_to_non_nullable
 as String,tasks: null == tasks ? _self.tasks : tasks // ignore: cast_nullable_to_non_nullable
-as List<TaskEntity>,
+as List<TaskUiModel>,
   ));
 }
 
 }
 
 
-/// Adds pattern-matching-related methods to [TabEntry].
-extension TabEntryPatterns on TabEntry {
+/// Adds pattern-matching-related methods to [TabUiModel].
+extension TabUiModelPatterns on TabUiModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -88,10 +88,10 @@ extension TabEntryPatterns on TabEntry {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TabEntry value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TabUiModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _TabEntry() when $default != null:
+case _TabUiModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -110,10 +110,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TabEntry value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TabUiModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _TabEntry():
+case _TabUiModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -131,10 +131,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TabEntry value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TabUiModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _TabEntry() when $default != null:
+case _TabUiModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -152,9 +152,9 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String tabName,  List<TaskEntity> tasks)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String tabName,  List<TaskUiModel> tasks)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _TabEntry() when $default != null:
+case _TabUiModel() when $default != null:
 return $default(_that.id,_that.tabName,_that.tasks);case _:
   return orElse();
 
@@ -173,9 +173,9 @@ return $default(_that.id,_that.tabName,_that.tasks);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String tabName,  List<TaskEntity> tasks)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String tabName,  List<TaskUiModel> tasks)  $default,) {final _that = this;
 switch (_that) {
-case _TabEntry():
+case _TabUiModel():
 return $default(_that.id,_that.tabName,_that.tasks);case _:
   throw StateError('Unexpected subclass');
 
@@ -193,9 +193,9 @@ return $default(_that.id,_that.tabName,_that.tasks);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String tabName,  List<TaskEntity> tasks)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String tabName,  List<TaskUiModel> tasks)?  $default,) {final _that = this;
 switch (_that) {
-case _TabEntry() when $default != null:
+case _TabUiModel() when $default != null:
 return $default(_that.id,_that.tabName,_that.tasks);case _:
   return null;
 
@@ -207,31 +207,31 @@ return $default(_that.id,_that.tabName,_that.tasks);case _:
 /// @nodoc
 
 
-class _TabEntry implements TabEntry {
-  const _TabEntry({this.id, required this.tabName, final  List<TaskEntity> tasks = const <TaskEntity>[]}): _tasks = tasks;
+class _TabUiModel implements TabUiModel {
+  const _TabUiModel({this.id, required this.tabName, final  List<TaskUiModel> tasks = const <TaskUiModel>[]}): _tasks = tasks;
   
 
 @override final  int? id;
 @override final  String tabName;
- final  List<TaskEntity> _tasks;
-@override@JsonKey() List<TaskEntity> get tasks {
+ final  List<TaskUiModel> _tasks;
+@override@JsonKey() List<TaskUiModel> get tasks {
   if (_tasks is EqualUnmodifiableListView) return _tasks;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_tasks);
 }
 
 
-/// Create a copy of TabEntry
+/// Create a copy of TabUiModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$TabEntryCopyWith<_TabEntry> get copyWith => __$TabEntryCopyWithImpl<_TabEntry>(this, _$identity);
+_$TabUiModelCopyWith<_TabUiModel> get copyWith => __$TabUiModelCopyWithImpl<_TabUiModel>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TabEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.tabName, tabName) || other.tabName == tabName)&&const DeepCollectionEquality().equals(other._tasks, _tasks));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TabUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tabName, tabName) || other.tabName == tabName)&&const DeepCollectionEquality().equals(other._tasks, _tasks));
 }
 
 
@@ -240,18 +240,18 @@ int get hashCode => Object.hash(runtimeType,id,tabName,const DeepCollectionEqual
 
 @override
 String toString() {
-  return 'TabEntry(id: $id, tabName: $tabName, tasks: $tasks)';
+  return 'TabUiModel(id: $id, tabName: $tabName, tasks: $tasks)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$TabEntryCopyWith<$Res> implements $TabEntryCopyWith<$Res> {
-  factory _$TabEntryCopyWith(_TabEntry value, $Res Function(_TabEntry) _then) = __$TabEntryCopyWithImpl;
+abstract mixin class _$TabUiModelCopyWith<$Res> implements $TabUiModelCopyWith<$Res> {
+  factory _$TabUiModelCopyWith(_TabUiModel value, $Res Function(_TabUiModel) _then) = __$TabUiModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String tabName, List<TaskEntity> tasks
+ int? id, String tabName, List<TaskUiModel> tasks
 });
 
 
@@ -259,21 +259,21 @@ $Res call({
 
 }
 /// @nodoc
-class __$TabEntryCopyWithImpl<$Res>
-    implements _$TabEntryCopyWith<$Res> {
-  __$TabEntryCopyWithImpl(this._self, this._then);
+class __$TabUiModelCopyWithImpl<$Res>
+    implements _$TabUiModelCopyWith<$Res> {
+  __$TabUiModelCopyWithImpl(this._self, this._then);
 
-  final _TabEntry _self;
-  final $Res Function(_TabEntry) _then;
+  final _TabUiModel _self;
+  final $Res Function(_TabUiModel) _then;
 
-/// Create a copy of TabEntry
+/// Create a copy of TabUiModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? tabName = null,Object? tasks = null,}) {
-  return _then(_TabEntry(
+  return _then(_TabUiModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,tabName: null == tabName ? _self.tabName : tabName // ignore: cast_nullable_to_non_nullable
 as String,tasks: null == tasks ? _self._tasks : tasks // ignore: cast_nullable_to_non_nullable
-as List<TaskEntity>,
+as List<TaskUiModel>,
   ));
 }
 
