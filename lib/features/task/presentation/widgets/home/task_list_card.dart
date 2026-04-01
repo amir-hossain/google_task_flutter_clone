@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_todo_clone/features/task/data/models/task_ui_model.dart';
 
+import '../../../data/models/task_ui_model.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../pages/task_edit_page.dart';
 
@@ -121,6 +121,18 @@ class TaskListCard extends StatelessWidget {
                     },
                     title: Text(t.title),
                     leading: const Icon(Icons.radio_button_unchecked),
+                    trailing: IconButton(
+                      onPressed: () {
+                        context.read<HomeCubit>().toggleTaskFavourite(
+                          tabIndex: tabIndex,
+                          taskId: t.id,
+                        );
+                      },
+                      icon: Icon(
+                        t.isFavourite ? Icons.star : Icons.star_border,
+                        color: t.isFavourite ? Colors.amber : subtle,
+                      ),
+                    ),
                   );
                 },
               ),
