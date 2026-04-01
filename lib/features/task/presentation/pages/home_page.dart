@@ -60,7 +60,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ],
                       ),
 
-                      // Create new list
                       InkWell(
                         onTap: () => _openAddListPage(context, cubit),
                         child: Row(

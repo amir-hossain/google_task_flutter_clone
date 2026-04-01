@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_todo_clone/features/task/data/models/task_ui_model.dart';
 
+import '../../data/models/task_ui_model.dart';
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
 
@@ -19,6 +19,7 @@ class TaskEditPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final task = _findTask(context.watch<HomeCubit>().state);
     final title = task?.title ?? '';
+    final isFavourite = task?.isFavourite ?? false;
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -44,11 +45,22 @@ class TaskEditPage extends StatelessWidget {
           ),
           title: const Text('My Tasks'),
           centerTitle: false,
-          actions: const [
-            Icon(Icons.star_border),
-            SizedBox(width: 6),
-            Icon(Icons.more_vert),
-            SizedBox(width: 8),
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.read<HomeCubit>().toggleTaskFavourite(
+                  tabIndex: tabIndex,
+                  taskId: taskId,
+                );
+              },
+              icon: Icon(
+                isFavourite ? Icons.star : Icons.star_border,
+                color: isFavourite ? Colors.amber : null,
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.more_vert),
+            const SizedBox(width: 8),
           ],
         ),
         body: Container(

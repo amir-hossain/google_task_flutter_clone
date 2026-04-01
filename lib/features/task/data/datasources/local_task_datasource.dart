@@ -13,6 +13,7 @@ class LocalTaskDataSource {
   static const _taskColumnId = 'id';
   static const _taskColumnTitle = 'title';
   static const _taskColumnTabId = 'tab_id';
+  static const _taskColumnIsFavourite = 'is_favourite';
 
   Database? _db;
 
@@ -22,7 +23,7 @@ class LocalTaskDataSource {
     final path = p.join(dbPath, _databaseName);
     _db = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE $_tabsTable (
@@ -36,6 +37,12 @@ class LocalTaskDataSource {
         if (oldVersion < 2) {
           await _createTasksTable(db);
         }
+        if (oldVersion < 3) {
+          await db.execute('''
+            ALTER TABLE $_tasksTable
+            ADD COLUMN $_taskColumnIsFavourite INTEGER NOT NULL DEFAULT 0
+          ''');
+        }
       },
     );
     return _db!;
@@ -47,6 +54,7 @@ class LocalTaskDataSource {
         $_taskColumnId TEXT PRIMARY KEY,
         $_taskColumnTitle TEXT NOT NULL,
         $_taskColumnTabId INTEGER NOT NULL,
+        $_taskColumnIsFavourite INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY ($_taskColumnTabId) REFERENCES $_tabsTable ($_tabColumnId)
       )
     ''');
@@ -72,12 +80,14 @@ class LocalTaskDataSource {
       final tabId = row[_taskColumnTabId] as int?;
       final taskId = row[_taskColumnId] as String?;
       final title = row[_taskColumnTitle] as String?;
+      final isFavourite = (row[_taskColumnIsFavourite] as int? ?? 0) == 1;
       if (tabId == null || taskId == null || title == null) continue;
 
       tasksByTabId.putIfAbsent(tabId, () => <TaskUiModel>[]).add(
         TaskUiModel(
           id: taskId,
           title: title,
+          isFavourite: isFavourite,
         ),
       );
     }
@@ -106,6 +116,7 @@ class LocalTaskDataSource {
         _taskColumnId: task.id,
         _taskColumnTitle: task.title,
         _taskColumnTabId: tabId,
+        _taskColumnIsFavourite: task.isFavourite ? 1 : 0,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );

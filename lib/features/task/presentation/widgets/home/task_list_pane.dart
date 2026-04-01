@@ -2,19 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_todo_clone/features/task/presentation/widgets/home/task_list_card.dart';
 
+import '../../../data/models/task_ui_model.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
+import '../../pages/task_edit_page.dart';
 
-/// Starred / favourite tab — uses same empty layout until favourites are modeled.
+typedef _FavouriteItem = ({int tabIndex, TaskUiModel task});
+
+/// Starred / favourite tab.
 class FavouriteTaskListPane extends StatelessWidget {
   const FavouriteTaskListPane({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const TaskListCard(
-      title: 'Starred',
-      tasks: [],
-      tabIndex: 0,
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        final favourites = <_FavouriteItem>[
+          for (var tabIndex = 0; tabIndex < state.tabs.length; tabIndex++)
+            for (final task in state.tabs[tabIndex].tasks)
+              if (task.isFavourite) (tabIndex: tabIndex, task: task),
+        ];
+
+        final theme = Theme.of(context);
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
+          child: Material(
+            color: theme.colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    'Starred',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: favourites.isEmpty
+                      ? const Center(child: Text('No starred tasks yet'))
+                      : ListView.builder(
+                    itemCount: favourites.length,
+                    itemBuilder: (context, index) {
+                      final item = favourites[index];
+                      return ListTile(
+                        leading: const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        title: Text(item.task.title),
+                        onTap: () {
+                          Navigator.of(context).push<void>(
+                            MaterialPageRoute<void>(
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<HomeCubit>(),
+                                child: TaskEditPage(
+                                  tabIndex: item.tabIndex,
+                                  taskId: item.task.id,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

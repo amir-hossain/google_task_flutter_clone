@@ -72,6 +72,32 @@ class HomeCubit extends Cubit<HomeState> {
 
     final nextTabs = List<TabUiModel>.from(state.tabs);
     nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
+    if (tab.id != null) {
+      unawaited(_saveTaskUseCase(tabId: tab.id!, task: nextTasks[taskIndex]));
+    }
+    emit(state.copyWith(tabs: nextTabs));
+  }
+
+  void toggleTaskFavourite({
+    required int tabIndex,
+    required String taskId,
+  }) {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+    final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
+    if (taskIndex < 0) return;
+
+    final nextTasks = List<TaskUiModel>.from(tab.tasks);
+    final currentTask = nextTasks[taskIndex];
+    nextTasks[taskIndex] = currentTask.copyWith(
+      isFavourite: !currentTask.isFavourite,
+    );
+
+    final nextTabs = List<TabUiModel>.from(state.tabs);
+    nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
+    if (tab.id != null) {
+      unawaited(_saveTaskUseCase(tabId: tab.id!, task: nextTasks[taskIndex]));
+    }
     emit(state.copyWith(tabs: nextTabs));
   }
 
