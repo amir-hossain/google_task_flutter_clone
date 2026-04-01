@@ -65,11 +65,30 @@ class LocalTaskDataSource {
   Future<List<TabUiModel>> getTaskTabs() async {
     final db = await _database();
     final rows = await db.query(_tabsTable, orderBy: '$_tabColumnId ASC');
+    final taskRows = await db.query(_tasksTable, orderBy: '$_taskColumnId ASC');
+
+    final tasksByTabId = <int, List<TaskUiModel>>{};
+    for (final row in taskRows) {
+      final tabId = row[_taskColumnTabId] as int?;
+      final taskId = row[_taskColumnId] as String?;
+      final title = row[_taskColumnTitle] as String?;
+      if (tabId == null || taskId == null || title == null) continue;
+
+      tasksByTabId.putIfAbsent(tabId, () => <TaskUiModel>[]).add(
+        TaskUiModel(
+          id: taskId,
+          title: title,
+        ),
+      );
+    }
+
     return rows
         .map(
           (row) => TabUiModel(
         id: row[_tabColumnId] as int?,
         tabName: (row[_tabColumnName] as String?) ?? '',
+        tasks: tasksByTabId[(row[_tabColumnId] as int?) ?? -1] ??
+            const <TaskUiModel>[],
       ),
     )
         .where((tab) => tab.tabName.trim().isNotEmpty)
