@@ -181,6 +181,26 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  void sortTasksInTabByTitle({required int tabIndex}) {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+
+    final nextTasks = List<TaskUiModel>.from(tab.tasks);
+    nextTasks.sort(
+          (a, b) {
+        final aTitle = a.title.trim().toLowerCase();
+        final bTitle = b.title.trim().toLowerCase();
+        final byTitle = aTitle.compareTo(bTitle);
+        if (byTitle != 0) return byTitle;
+        return a.id.compareTo(b.id);
+      },
+    );
+
+    final nextTabs = List<TabUiModel>.from(state.tabs);
+    nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
+    emit(state.copyWith(tabs: nextTabs));
+  }
+
   Future<void> deleteTab({required int tabIndex}) async {
     if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
     final tab = state.tabs[tabIndex];

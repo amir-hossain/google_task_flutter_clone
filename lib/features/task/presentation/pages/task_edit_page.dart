@@ -31,16 +31,17 @@ class TaskEditPage extends StatelessWidget {
         ? const Color(0xFFE8C4B8).withValues(alpha: 0.9)
         : theme.colorScheme.onSurfaceVariant;
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
         _saveTitle(context, title);
-        return true;
+        Navigator.of(context).pop();
       },
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(
             onPressed: () {
-              _saveTitle(context, title);
               Navigator.of(context).pop();
             },
           ),

@@ -129,6 +129,18 @@ class TaskListPane extends StatelessWidget {
           onDeleteList: () {
             context.read<HomeCubit>().deleteTab(tabIndex: tabIndex);
           },
+          onSortSelected: (option) {
+            // Sort only when the selected option is "Title".
+            switch (option) {
+              case 'Title':
+                context
+                    .read<HomeCubit>()
+                    .sortTasksInTabByTitle(tabIndex: tabIndex);
+                break;
+              default:
+                break;
+            }
+          },
         );
       },
     );
