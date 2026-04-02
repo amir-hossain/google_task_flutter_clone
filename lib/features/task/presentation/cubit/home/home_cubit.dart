@@ -10,6 +10,7 @@ import '../../../domain/usecases/get_task_tabs_usecase.dart';
 import '../../../domain/usecases/delete_completed_tasks_usecase.dart';
 import '../../../domain/usecases/save_task_usecase.dart';
 import '../../../domain/usecases/save_task_tab_usecase.dart';
+import '../../../domain/usecases/update_task_tab_usecase.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -18,6 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
     GetTaskTabsUseCase? getTaskTabsUseCase,
     SaveTaskUseCase? saveTaskUseCase,
     DeleteCompletedTasksUseCase? deleteCompletedTasksUseCase,
+    UpdateTaskTabUseCase? updateTaskTabUseCase,
   }) : _saveTaskTabUseCase =
       saveTaskTabUseCase ??
           SaveTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
@@ -32,6 +34,9 @@ class HomeCubit extends Cubit<HomeState> {
                 DeleteCompletedTasksUseCase(
                   TaskRepositoryImpl(LocalTaskDataSource()),
                 ),
+        _updateTaskTabUseCase =
+            updateTaskTabUseCase ??
+                UpdateTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
         super(HomeState.init()) {
     _loadTabs();
   }
@@ -40,6 +45,7 @@ class HomeCubit extends Cubit<HomeState> {
   final GetTaskTabsUseCase _getTaskTabsUseCase;
   final SaveTaskUseCase _saveTaskUseCase;
   final DeleteCompletedTasksUseCase _deleteCompletedTasksUseCase;
+  final UpdateTaskTabUseCase _updateTaskTabUseCase;
 
   void addTask(int tabIndex, String title) {
     final name = title.trim();
@@ -63,6 +69,25 @@ class HomeCubit extends Cubit<HomeState> {
     if (name.isEmpty) return;
     final savedTab = await _saveTaskTabUseCase(name);
     emit(state.copyWith(tabs: [...state.tabs, savedTab]));
+  }
+
+  Future<void> renameTab({
+    required int tabIndex,
+    required String newName,
+  }) async {
+    final name = newName.trim();
+    if (name.isEmpty) return;
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+    if (tab.tabName == name) return;
+
+    final nextTabs = List<TabUiModel>.from(state.tabs);
+    nextTabs[tabIndex] = tab.copyWith(tabName: name);
+    emit(state.copyWith(tabs: nextTabs));
+
+    if (tab.id != null) {
+      await _updateTaskTabUseCase(tabId: tab.id!, tabName: name);
+    }
   }
 
   void updateTaskTitle({

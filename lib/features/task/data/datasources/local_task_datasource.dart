@@ -76,6 +76,19 @@ class LocalTaskDataSource {
     return TabUiModel(id: id, tabName: tabName);
   }
 
+  Future<void> updateTaskTabName({
+    required int tabId,
+    required String tabName,
+  }) async {
+    final db = await _database();
+    await db.update(
+      _tabsTable,
+      {_tabColumnName: tabName},
+      where: '$_tabColumnId = ?',
+      whereArgs: [tabId],
+    );
+  }
+
   Future<List<TabUiModel>> getTaskTabs() async {
     final db = await _database();
     final rows = await db.query(_tabsTable, orderBy: '$_tabColumnId ASC');

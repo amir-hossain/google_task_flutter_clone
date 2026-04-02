@@ -3,6 +3,7 @@ import '../../data/models/task_ui_model.dart';
 
 abstract class TaskRepository {
   Future<TabUiModel> saveTaskTab(String tabName);
+  Future<void> updateTaskTabName({required int tabId, required String tabName});
   Future<List<TabUiModel>> getTaskTabs();
   Future<void> saveTask({required int tabId, required TaskUiModel task});
   Future<void> deleteCompletedTasks({required int tabId});

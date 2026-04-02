@@ -34,7 +34,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       top: true,
       bottom: true,
       child: BlocBuilder<HomeCubit, HomeState>(
-        buildWhen: (prev, curr) => prev.tabs.length != curr.tabs.length,
+        buildWhen: (prev, curr) {
+          if (prev.tabs.length != curr.tabs.length) return true;
+          for (var i = 0; i < curr.tabs.length; i++) {
+            if (prev.tabs[i].tabName != curr.tabs[i].tabName) return true;
+          }
+          return false;
+        },
         builder: (BuildContext context, state) {
           _updateTabController(state.tabs.length + 1);
           return Scaffold(

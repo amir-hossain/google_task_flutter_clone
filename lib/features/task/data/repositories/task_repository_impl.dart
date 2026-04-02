@@ -14,6 +14,17 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
+  Future<void> updateTaskTabName({
+    required int tabId,
+    required String tabName,
+  }) {
+    return _localDataSource.updateTaskTabName(
+      tabId: tabId,
+      tabName: tabName,
+    );
+  }
+
+  @override
   Future<List<TabUiModel>> getTaskTabs() {
     return _localDataSource.getTaskTabs();
   }

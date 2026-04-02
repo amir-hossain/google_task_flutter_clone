@@ -4,14 +4,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/home/home_cubit.dart';
 
 class AddTaskListPage extends StatefulWidget {
-  const AddTaskListPage({super.key});
+  const AddTaskListPage({
+    super.key,
+    this.renameTabIndex,
+    this.initialName,
+  });
+
+  final int? renameTabIndex;
+  final String? initialName;
 
   @override
   State<AddTaskListPage> createState() => _AddTaskListPageState();
 }
 
 class _AddTaskListPageState extends State<AddTaskListPage> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialName ?? '');
+  }
 
   @override
   void dispose() {
@@ -27,16 +40,23 @@ class _AddTaskListPageState extends State<AddTaskListPage> {
       );
       return;
     }
-    await context.read<HomeCubit>().addTab(name);
+    final cubit = context.read<HomeCubit>();
+    final renameIndex = widget.renameTabIndex;
+    if (renameIndex != null) {
+      await cubit.renameTab(tabIndex: renameIndex, newName: name);
+    } else {
+      await cubit.addTab(name);
+    }
     if (!mounted) return;
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isRename = widget.renameTabIndex != null;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New list'),
+        title: Text(isRename ? 'Rename list' : 'New list'),
         actions: [
           TextButton(
             onPressed: _save,

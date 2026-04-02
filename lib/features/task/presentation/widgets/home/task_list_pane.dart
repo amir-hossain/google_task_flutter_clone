@@ -5,11 +5,11 @@ import 'package:google_todo_clone/features/task/presentation/widgets/home/task_l
 import '../../../data/models/task_ui_model.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
+import '../../pages/add_task_list_page.dart';
 import '../../pages/task_edit_page.dart';
 
 typedef _FavouriteItem = ({int tabIndex, TaskUiModel task});
 
-/// Starred / favourite tab.
 class FavouriteTaskListPane extends StatelessWidget {
   const FavouriteTaskListPane({super.key});
 
@@ -111,6 +111,19 @@ class TaskListPane extends StatelessWidget {
           onDeleteAllCompleted: () {
             context.read<HomeCubit>().deleteAllCompletedTasks(
               tabIndex: tabIndex,
+            );
+          },
+          onRenameList: () {
+            Navigator.of(context).push<void>(
+              MaterialPageRoute<void>(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<HomeCubit>(),
+                  child: AddTaskListPage(
+                    renameTabIndex: tabIndex,
+                    initialName: tab.tabName,
+                  ),
+                ),
+              ),
             );
           },
         );
