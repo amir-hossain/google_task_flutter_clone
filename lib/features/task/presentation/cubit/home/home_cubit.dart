@@ -8,6 +8,7 @@ import '../../../data/models/task_ui_model.dart';
 import '../../../data/repositories/task_repository_impl.dart';
 import '../../../domain/usecases/get_task_tabs_usecase.dart';
 import '../../../domain/usecases/delete_completed_tasks_usecase.dart';
+import '../../../domain/usecases/delete_task_tab_usecase.dart';
 import '../../../domain/usecases/save_task_usecase.dart';
 import '../../../domain/usecases/save_task_tab_usecase.dart';
 import '../../../domain/usecases/update_task_tab_usecase.dart';
@@ -19,6 +20,7 @@ class HomeCubit extends Cubit<HomeState> {
     GetTaskTabsUseCase? getTaskTabsUseCase,
     SaveTaskUseCase? saveTaskUseCase,
     DeleteCompletedTasksUseCase? deleteCompletedTasksUseCase,
+    DeleteTaskTabUseCase? deleteTaskTabUseCase,
     UpdateTaskTabUseCase? updateTaskTabUseCase,
   }) : _saveTaskTabUseCase =
       saveTaskTabUseCase ??
@@ -34,6 +36,11 @@ class HomeCubit extends Cubit<HomeState> {
                 DeleteCompletedTasksUseCase(
                   TaskRepositoryImpl(LocalTaskDataSource()),
                 ),
+        _deleteTaskTabUseCase =
+            deleteTaskTabUseCase ??
+                DeleteTaskTabUseCase(
+                  TaskRepositoryImpl(LocalTaskDataSource()),
+                ),
         _updateTaskTabUseCase =
             updateTaskTabUseCase ??
                 UpdateTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
@@ -45,6 +52,7 @@ class HomeCubit extends Cubit<HomeState> {
   final GetTaskTabsUseCase _getTaskTabsUseCase;
   final SaveTaskUseCase _saveTaskUseCase;
   final DeleteCompletedTasksUseCase _deleteCompletedTasksUseCase;
+  final DeleteTaskTabUseCase _deleteTaskTabUseCase;
   final UpdateTaskTabUseCase _updateTaskTabUseCase;
 
   void addTask(int tabIndex, String title) {
@@ -171,6 +179,18 @@ class HomeCubit extends Cubit<HomeState> {
     if (tab.id != null) {
       await _deleteCompletedTasksUseCase(tabId: tab.id!);
     }
+  }
+
+  Future<void> deleteTab({required int tabIndex}) async {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+
+    final nextTabs = List<TabUiModel>.from(state.tabs)..removeAt(tabIndex);
+    emit(state.copyWith(tabs: nextTabs));
+
+    // Only persist saved tabs (those with a database id).
+    if (tab.id == null) return;
+    await _deleteTaskTabUseCase(tabId: tab.id!);
   }
 
   Future<void> _loadTabs() async {

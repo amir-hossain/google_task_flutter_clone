@@ -7,4 +7,5 @@ abstract class TaskRepository {
   Future<List<TabUiModel>> getTaskTabs();
   Future<void> saveTask({required int tabId, required TaskUiModel task});
   Future<void> deleteCompletedTasks({required int tabId});
+  Future<void> deleteTaskTab({required int tabId});
 }

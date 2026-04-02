@@ -126,6 +126,9 @@ class TaskListPane extends StatelessWidget {
               ),
             );
           },
+          onDeleteList: () {
+            context.read<HomeCubit>().deleteTab(tabIndex: tabIndex);
+          },
         );
       },
     );

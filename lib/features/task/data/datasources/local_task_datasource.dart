@@ -148,4 +148,21 @@ class LocalTaskDataSource {
       whereArgs: [tabId, 1],
     );
   }
+
+  Future<void> deleteTaskTab({required int tabId}) async {
+    final db = await _database();
+
+    // Delete tasks first to avoid foreign-key violations (no ON DELETE CASCADE).
+    await db.delete(
+      _tasksTable,
+      where: '$_taskColumnTabId = ?',
+      whereArgs: [tabId],
+    );
+
+    await db.delete(
+      _tabsTable,
+      where: '$_tabColumnId = ?',
+      whereArgs: [tabId],
+    );
+  }
 }

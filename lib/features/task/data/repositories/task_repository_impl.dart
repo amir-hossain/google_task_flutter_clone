@@ -38,4 +38,9 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<void> deleteCompletedTasks({required int tabId}) {
     return _localDataSource.deleteCompletedTasks(tabId: tabId);
   }
+
+  @override
+  Future<void> deleteTaskTab({required int tabId}) {
+    return _localDataSource.deleteTaskTab(tabId: tabId);
+  }
 }
