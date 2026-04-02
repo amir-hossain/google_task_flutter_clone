@@ -7,6 +7,7 @@ import '../../../data/models/tab_ui_model.dart';
 import '../../../data/models/task_ui_model.dart';
 import '../../../data/repositories/task_repository_impl.dart';
 import '../../../domain/usecases/get_task_tabs_usecase.dart';
+import '../../../domain/usecases/delete_completed_tasks_usecase.dart';
 import '../../../domain/usecases/save_task_usecase.dart';
 import '../../../domain/usecases/save_task_tab_usecase.dart';
 import 'home_state.dart';
@@ -16,12 +17,21 @@ class HomeCubit extends Cubit<HomeState> {
     SaveTaskTabUseCase? saveTaskTabUseCase,
     GetTaskTabsUseCase? getTaskTabsUseCase,
     SaveTaskUseCase? saveTaskUseCase,
-  })  : _saveTaskTabUseCase = saveTaskTabUseCase ??
-      SaveTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
-        _getTaskTabsUseCase = getTaskTabsUseCase ??
-            GetTaskTabsUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
-        _saveTaskUseCase = saveTaskUseCase ??
-            SaveTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+    DeleteCompletedTasksUseCase? deleteCompletedTasksUseCase,
+  }) : _saveTaskTabUseCase =
+      saveTaskTabUseCase ??
+          SaveTaskTabUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _getTaskTabsUseCase =
+            getTaskTabsUseCase ??
+                GetTaskTabsUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _saveTaskUseCase =
+            saveTaskUseCase ??
+                SaveTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _deleteCompletedTasksUseCase =
+            deleteCompletedTasksUseCase ??
+                DeleteCompletedTasksUseCase(
+                  TaskRepositoryImpl(LocalTaskDataSource()),
+                ),
         super(HomeState.init()) {
     _loadTabs();
   }
@@ -29,6 +39,7 @@ class HomeCubit extends Cubit<HomeState> {
   final SaveTaskTabUseCase _saveTaskTabUseCase;
   final GetTaskTabsUseCase _getTaskTabsUseCase;
   final SaveTaskUseCase _saveTaskUseCase;
+  final DeleteCompletedTasksUseCase _deleteCompletedTasksUseCase;
 
   void addTask(int tabIndex, String title) {
     final name = title.trim();
@@ -78,10 +89,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(tabs: nextTabs));
   }
 
-  void toggleTaskFavourite({
-    required int tabIndex,
-    required String taskId,
-  }) {
+  void toggleTaskFavourite({required int tabIndex, required String taskId}) {
     if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
     final tab = state.tabs[tabIndex];
     final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
@@ -99,6 +107,45 @@ class HomeCubit extends Cubit<HomeState> {
       unawaited(_saveTaskUseCase(tabId: tab.id!, task: nextTasks[taskIndex]));
     }
     emit(state.copyWith(tabs: nextTabs));
+  }
+
+  void toggleTaskCompleted({required int tabIndex, required String taskId}) {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+    final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
+    if (taskIndex < 0) return;
+
+    final nextTasks = List<TaskUiModel>.from(tab.tasks);
+    final currentTask = nextTasks[taskIndex];
+    nextTasks[taskIndex] = currentTask.copyWith(
+      isCompleted: !currentTask.isCompleted,
+    );
+
+    final nextTabs = List<TabUiModel>.from(state.tabs);
+    nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
+    if (tab.id != null) {
+      unawaited(_saveTaskUseCase(tabId: tab.id!, task: nextTasks[taskIndex]));
+    }
+    emit(state.copyWith(tabs: nextTabs));
+  }
+
+  Future<void> deleteAllCompletedTasks({required int tabIndex}) async {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+
+    final hasCompletedTasks = tab.tasks.any((task) => task.isCompleted);
+    if (!hasCompletedTasks) return;
+
+    final nextTasks = tab.tasks
+        .where((task) => !task.isCompleted)
+        .toList(growable: false);
+    final nextTabs = List<TabUiModel>.from(state.tabs);
+    nextTabs[tabIndex] = tab.copyWith(tasks: nextTasks);
+    emit(state.copyWith(tabs: nextTabs));
+
+    if (tab.id != null) {
+      await _deleteCompletedTasksUseCase(tabId: tab.id!);
+    }
   }
 
   Future<void> _loadTabs() async {

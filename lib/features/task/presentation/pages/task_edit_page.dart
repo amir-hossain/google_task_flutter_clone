@@ -20,6 +20,7 @@ class TaskEditPage extends StatelessWidget {
     final task = _findTask(context.watch<HomeCubit>().state);
     final title = task?.title ?? '';
     final isFavourite = task?.isFavourite ?? false;
+    final isCompleted = task?.isCompleted ?? false;
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -112,8 +113,15 @@ class TaskEditPage extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: FilledButton(
-                    onPressed: () {},
-                    child: const Text('Mark completed'),
+                    onPressed: () {
+                      context.read<HomeCubit>().toggleTaskCompleted(
+                        tabIndex: tabIndex,
+                        taskId: taskId,
+                      );
+                    },
+                    child: Text(
+                      isCompleted ? 'Mark uncompleted' : 'Mark completed',
+                    ),
                   ),
                 ),
               ],

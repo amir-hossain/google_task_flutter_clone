@@ -14,6 +14,7 @@ class LocalTaskDataSource {
   static const _taskColumnTitle = 'title';
   static const _taskColumnTabId = 'tab_id';
   static const _taskColumnIsFavourite = 'is_favourite';
+  static const _taskColumnIsCompleted = 'is_completed';
 
   Database? _db;
 
@@ -23,7 +24,7 @@ class LocalTaskDataSource {
     final path = p.join(dbPath, _databaseName);
     _db = await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE $_tabsTable (
@@ -43,6 +44,12 @@ class LocalTaskDataSource {
             ADD COLUMN $_taskColumnIsFavourite INTEGER NOT NULL DEFAULT 0
           ''');
         }
+        if (oldVersion < 4) {
+          await db.execute('''
+            ALTER TABLE $_tasksTable
+            ADD COLUMN $_taskColumnIsCompleted INTEGER NOT NULL DEFAULT 0
+          ''');
+        }
       },
     );
     return _db!;
@@ -55,6 +62,7 @@ class LocalTaskDataSource {
         $_taskColumnTitle TEXT NOT NULL,
         $_taskColumnTabId INTEGER NOT NULL,
         $_taskColumnIsFavourite INTEGER NOT NULL DEFAULT 0,
+        $_taskColumnIsCompleted INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY ($_taskColumnTabId) REFERENCES $_tabsTable ($_tabColumnId)
       )
     ''');
@@ -62,11 +70,9 @@ class LocalTaskDataSource {
 
   Future<TabUiModel> saveTaskTab(String tabName) async {
     final db = await _database();
-    final id = await db.insert(
-      _tabsTable,
-      {_tabColumnName: tabName},
-      conflictAlgorithm: ConflictAlgorithm.abort,
-    );
+    final id = await db.insert(_tabsTable, {
+      _tabColumnName: tabName,
+    }, conflictAlgorithm: ConflictAlgorithm.abort);
     return TabUiModel(id: id, tabName: tabName);
   }
 
@@ -81,13 +87,17 @@ class LocalTaskDataSource {
       final taskId = row[_taskColumnId] as String?;
       final title = row[_taskColumnTitle] as String?;
       final isFavourite = (row[_taskColumnIsFavourite] as int? ?? 0) == 1;
+      final isCompleted = (row[_taskColumnIsCompleted] as int? ?? 0) == 1;
       if (tabId == null || taskId == null || title == null) continue;
 
-      tasksByTabId.putIfAbsent(tabId, () => <TaskUiModel>[]).add(
+      tasksByTabId
+          .putIfAbsent(tabId, () => <TaskUiModel>[])
+          .add(
         TaskUiModel(
           id: taskId,
           title: title,
           isFavourite: isFavourite,
+          isCompleted: isCompleted,
         ),
       );
     }
@@ -97,7 +107,8 @@ class LocalTaskDataSource {
           (row) => TabUiModel(
         id: row[_tabColumnId] as int?,
         tabName: (row[_tabColumnName] as String?) ?? '',
-        tasks: tasksByTabId[(row[_tabColumnId] as int?) ?? -1] ??
+        tasks:
+        tasksByTabId[(row[_tabColumnId] as int?) ?? -1] ??
             const <TaskUiModel>[],
       ),
     )
@@ -105,20 +116,23 @@ class LocalTaskDataSource {
         .toList(growable: false);
   }
 
-  Future<void> saveTask({
-    required int tabId,
-    required TaskUiModel task,
-  }) async {
+  Future<void> saveTask({required int tabId, required TaskUiModel task}) async {
     final db = await _database();
-    await db.insert(
+    await db.insert(_tasksTable, {
+      _taskColumnId: task.id,
+      _taskColumnTitle: task.title,
+      _taskColumnTabId: tabId,
+      _taskColumnIsFavourite: task.isFavourite ? 1 : 0,
+      _taskColumnIsCompleted: task.isCompleted ? 1 : 0,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> deleteCompletedTasks({required int tabId}) async {
+    final db = await _database();
+    await db.delete(
       _tasksTable,
-      {
-        _taskColumnId: task.id,
-        _taskColumnTitle: task.title,
-        _taskColumnTabId: tabId,
-        _taskColumnIsFavourite: task.isFavourite ? 1 : 0,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      where: '$_taskColumnTabId = ? AND $_taskColumnIsCompleted = ?',
+      whereArgs: [tabId, 1],
     );
   }
 }

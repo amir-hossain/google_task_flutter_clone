@@ -8,5 +8,6 @@ abstract class TaskUiModel with _$TaskUiModel {
     required String id,
     required String title,
     @Default(false) bool isFavourite,
+    @Default(false) bool isCompleted,
   }) = _TaskUiModel;
 }

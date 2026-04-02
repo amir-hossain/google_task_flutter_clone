@@ -81,7 +81,6 @@ class FavouriteTaskListPane extends StatelessWidget {
   }
 }
 
-/// One user list tab; rebuilds when that tab's tasks or name change.
 class TaskListPane extends StatelessWidget {
   const TaskListPane({super.key, required this.tabIndex});
 
@@ -101,10 +100,19 @@ class TaskListPane extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final tab = state.tabs[tabIndex];
+        final completedTaskCount = tab.tasks
+            .where((task) => task.isCompleted)
+            .length;
         return TaskListCard(
           title: tab.tabName,
           tasks: tab.tasks,
           tabIndex: tabIndex,
+          completedTaskCount: completedTaskCount,
+          onDeleteAllCompleted: () {
+            context.read<HomeCubit>().deleteAllCompletedTasks(
+              tabIndex: tabIndex,
+            );
+          },
         );
       },
     );

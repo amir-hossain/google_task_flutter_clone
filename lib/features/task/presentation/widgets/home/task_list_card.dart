@@ -119,8 +119,33 @@ class TaskListCard extends StatelessWidget {
                         ),
                       );
                     },
-                    title: Text(t.title),
-                    leading: const Icon(Icons.radio_button_unchecked),
+                    title: Text(
+                      t.title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        decoration: t.isCompleted
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                        color: t.isCompleted
+                            ? subtle
+                            : theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    leading: IconButton(
+                      onPressed: () {
+                        context.read<HomeCubit>().toggleTaskCompleted(
+                          tabIndex: tabIndex,
+                          taskId: t.id,
+                        );
+                      },
+                      icon: Icon(
+                        t.isCompleted
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: t.isCompleted
+                            ? theme.colorScheme.primary
+                            : subtle,
+                      ),
+                    ),
                     trailing: IconButton(
                       onPressed: () {
                         context.read<HomeCubit>().toggleTaskFavourite(

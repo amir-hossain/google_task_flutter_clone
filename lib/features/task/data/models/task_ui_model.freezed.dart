@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TaskUiModel {
 
-  String get id; String get title; bool get isFavourite;
+  String get id; String get title; bool get isFavourite; bool get isCompleted;
   /// Create a copy of TaskUiModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ mixin _$TaskUiModel {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is TaskUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavourite, isFavourite) || other.isFavourite == isFavourite));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is TaskUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavourite, isFavourite) || other.isFavourite == isFavourite)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
   }
 
 
   @override
-  int get hashCode => Object.hash(runtimeType,id,title,isFavourite);
+  int get hashCode => Object.hash(runtimeType,id,title,isFavourite,isCompleted);
 
   @override
   String toString() {
-    return 'TaskUiModel(id: $id, title: $title, isFavourite: $isFavourite)';
+    return 'TaskUiModel(id: $id, title: $title, isFavourite: $isFavourite, isCompleted: $isCompleted)';
   }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TaskUiModelCopyWith<$Res>  {
   factory $TaskUiModelCopyWith(TaskUiModel value, $Res Function(TaskUiModel) _then) = _$TaskUiModelCopyWithImpl;
   @useResult
   $Res call({
-    String id, String title, bool isFavourite
+    String id, String title, bool isFavourite, bool isCompleted
   });
 
 
@@ -62,11 +62,12 @@ class _$TaskUiModelCopyWithImpl<$Res>
 
   /// Create a copy of TaskUiModel
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? isFavourite = null,}) {
+  @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? isFavourite = null,Object? isCompleted = null,}) {
     return _then(_self.copyWith(
       id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
       as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
     as String,isFavourite: null == isFavourite ? _self.isFavourite : isFavourite // ignore: cast_nullable_to_non_nullable
+    as bool,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
     as bool,
     ));
   }
@@ -152,10 +153,10 @@ extension TaskUiModelPatterns on TaskUiModel {
   /// }
   /// ```
 
-  @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  bool isFavourite)?  $default,{required TResult orElse(),}) {final _that = this;
+  @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  bool isFavourite,  bool isCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
   switch (_that) {
   case _TaskUiModel() when $default != null:
-  return $default(_that.id,_that.title,_that.isFavourite);case _:
+  return $default(_that.id,_that.title,_that.isFavourite,_that.isCompleted);case _:
   return orElse();
 
   }
@@ -173,10 +174,10 @@ extension TaskUiModelPatterns on TaskUiModel {
   /// }
   /// ```
 
-  @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  bool isFavourite)  $default,) {final _that = this;
+  @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  bool isFavourite,  bool isCompleted)  $default,) {final _that = this;
   switch (_that) {
   case _TaskUiModel():
-  return $default(_that.id,_that.title,_that.isFavourite);case _:
+  return $default(_that.id,_that.title,_that.isFavourite,_that.isCompleted);case _:
   throw StateError('Unexpected subclass');
 
   }
@@ -193,10 +194,10 @@ extension TaskUiModelPatterns on TaskUiModel {
   /// }
   /// ```
 
-  @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  bool isFavourite)?  $default,) {final _that = this;
+  @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  bool isFavourite,  bool isCompleted)?  $default,) {final _that = this;
   switch (_that) {
   case _TaskUiModel() when $default != null:
-  return $default(_that.id,_that.title,_that.isFavourite);case _:
+  return $default(_that.id,_that.title,_that.isFavourite,_that.isCompleted);case _:
   return null;
 
   }
@@ -208,12 +209,13 @@ extension TaskUiModelPatterns on TaskUiModel {
 
 
 class _TaskUiModel implements TaskUiModel {
-  const _TaskUiModel({required this.id, required this.title, this.isFavourite = false});
+  const _TaskUiModel({required this.id, required this.title, this.isFavourite = false, this.isCompleted = false});
 
 
   @override final  String id;
   @override final  String title;
   @override@JsonKey() final  bool isFavourite;
+  @override@JsonKey() final  bool isCompleted;
 
   /// Create a copy of TaskUiModel
   /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +227,16 @@ class _TaskUiModel implements TaskUiModel {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaskUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavourite, isFavourite) || other.isFavourite == isFavourite));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaskUiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavourite, isFavourite) || other.isFavourite == isFavourite)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
   }
 
 
   @override
-  int get hashCode => Object.hash(runtimeType,id,title,isFavourite);
+  int get hashCode => Object.hash(runtimeType,id,title,isFavourite,isCompleted);
 
   @override
   String toString() {
-    return 'TaskUiModel(id: $id, title: $title, isFavourite: $isFavourite)';
+    return 'TaskUiModel(id: $id, title: $title, isFavourite: $isFavourite, isCompleted: $isCompleted)';
   }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$TaskUiModelCopyWith<$Res> implements $TaskUiModelCopyWith
   factory _$TaskUiModelCopyWith(_TaskUiModel value, $Res Function(_TaskUiModel) _then) = __$TaskUiModelCopyWithImpl;
   @override @useResult
   $Res call({
-    String id, String title, bool isFavourite
+    String id, String title, bool isFavourite, bool isCompleted
   });
 
 
@@ -262,11 +264,12 @@ class __$TaskUiModelCopyWithImpl<$Res>
 
   /// Create a copy of TaskUiModel
   /// with the given fields replaced by the non-null parameter values.
-  @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? isFavourite = null,}) {
+  @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? isFavourite = null,Object? isCompleted = null,}) {
     return _then(_TaskUiModel(
       id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
       as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
     as String,isFavourite: null == isFavourite ? _self.isFavourite : isFavourite // ignore: cast_nullable_to_non_nullable
+    as bool,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
     as bool,
     ));
   }

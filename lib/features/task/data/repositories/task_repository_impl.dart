@@ -19,10 +19,12 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<void> saveTask({
-    required int tabId,
-    required TaskUiModel task,
-  }) {
+  Future<void> saveTask({required int tabId, required TaskUiModel task}) {
     return _localDataSource.saveTask(tabId: tabId, task: task);
+  }
+
+  @override
+  Future<void> deleteCompletedTasks({required int tabId}) {
+    return _localDataSource.deleteCompletedTasks(tabId: tabId);
   }
 }
