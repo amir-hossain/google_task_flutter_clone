@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
-  List<TabUiModel> get tabs;
+  List<TabUiModel> get tabs; int get subtaskComposerTabIndex; String? get subtaskComposerTaskId; List<String> get subtaskComposerRowIds;
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ mixin _$HomeState {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&const DeepCollectionEquality().equals(other.tabs, tabs));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&const DeepCollectionEquality().equals(other.tabs, tabs)&&(identical(other.subtaskComposerTabIndex, subtaskComposerTabIndex) || other.subtaskComposerTabIndex == subtaskComposerTabIndex)&&(identical(other.subtaskComposerTaskId, subtaskComposerTaskId) || other.subtaskComposerTaskId == subtaskComposerTaskId)&&const DeepCollectionEquality().equals(other.subtaskComposerRowIds, subtaskComposerRowIds));
   }
 
 
   @override
-  int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tabs));
+  int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tabs),subtaskComposerTabIndex,subtaskComposerTaskId,const DeepCollectionEquality().hash(subtaskComposerRowIds));
 
   @override
   String toString() {
-    return 'HomeState(tabs: $tabs)';
+    return 'HomeState(tabs: $tabs, subtaskComposerTabIndex: $subtaskComposerTabIndex, subtaskComposerTaskId: $subtaskComposerTaskId, subtaskComposerRowIds: $subtaskComposerRowIds)';
   }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
   @useResult
   $Res call({
-    List<TabUiModel> tabs
+    List<TabUiModel> tabs, int subtaskComposerTabIndex, String? subtaskComposerTaskId, List<String> subtaskComposerRowIds
   });
 
 
@@ -62,10 +62,13 @@ class _$HomeStateCopyWithImpl<$Res>
 
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline') @override $Res call({Object? tabs = null,}) {
+  @pragma('vm:prefer-inline') @override $Res call({Object? tabs = null,Object? subtaskComposerTabIndex = null,Object? subtaskComposerTaskId = freezed,Object? subtaskComposerRowIds = null,}) {
     return _then(_self.copyWith(
       tabs: null == tabs ? _self.tabs : tabs // ignore: cast_nullable_to_non_nullable
-      as List<TabUiModel>,
+      as List<TabUiModel>,subtaskComposerTabIndex: null == subtaskComposerTabIndex ? _self.subtaskComposerTabIndex : subtaskComposerTabIndex // ignore: cast_nullable_to_non_nullable
+    as int,subtaskComposerTaskId: freezed == subtaskComposerTaskId ? _self.subtaskComposerTaskId : subtaskComposerTaskId // ignore: cast_nullable_to_non_nullable
+    as String?,subtaskComposerRowIds: null == subtaskComposerRowIds ? _self.subtaskComposerRowIds : subtaskComposerRowIds // ignore: cast_nullable_to_non_nullable
+    as List<String>,
     ));
   }
 
@@ -150,10 +153,10 @@ extension HomeStatePatterns on HomeState {
   /// }
   /// ```
 
-  @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TabUiModel> tabs)?  $default,{required TResult orElse(),}) {final _that = this;
+  @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TabUiModel> tabs,  int subtaskComposerTabIndex,  String? subtaskComposerTaskId,  List<String> subtaskComposerRowIds)?  $default,{required TResult orElse(),}) {final _that = this;
   switch (_that) {
   case _HomeState() when $default != null:
-  return $default(_that.tabs);case _:
+  return $default(_that.tabs,_that.subtaskComposerTabIndex,_that.subtaskComposerTaskId,_that.subtaskComposerRowIds);case _:
   return orElse();
 
   }
@@ -171,10 +174,10 @@ extension HomeStatePatterns on HomeState {
   /// }
   /// ```
 
-  @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TabUiModel> tabs)  $default,) {final _that = this;
+  @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TabUiModel> tabs,  int subtaskComposerTabIndex,  String? subtaskComposerTaskId,  List<String> subtaskComposerRowIds)  $default,) {final _that = this;
   switch (_that) {
   case _HomeState():
-  return $default(_that.tabs);case _:
+  return $default(_that.tabs,_that.subtaskComposerTabIndex,_that.subtaskComposerTaskId,_that.subtaskComposerRowIds);case _:
   throw StateError('Unexpected subclass');
 
   }
@@ -191,10 +194,10 @@ extension HomeStatePatterns on HomeState {
   /// }
   /// ```
 
-  @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TabUiModel> tabs)?  $default,) {final _that = this;
+  @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TabUiModel> tabs,  int subtaskComposerTabIndex,  String? subtaskComposerTaskId,  List<String> subtaskComposerRowIds)?  $default,) {final _that = this;
   switch (_that) {
   case _HomeState() when $default != null:
-  return $default(_that.tabs);case _:
+  return $default(_that.tabs,_that.subtaskComposerTabIndex,_that.subtaskComposerTaskId,_that.subtaskComposerRowIds);case _:
   return null;
 
   }
@@ -206,7 +209,7 @@ extension HomeStatePatterns on HomeState {
 
 
 class _HomeState implements HomeState {
-  const _HomeState({required final  List<TabUiModel> tabs}): _tabs = tabs;
+  const _HomeState({required final  List<TabUiModel> tabs, this.subtaskComposerTabIndex = -1, this.subtaskComposerTaskId, final  List<String> subtaskComposerRowIds = const <String>[]}): _tabs = tabs,_subtaskComposerRowIds = subtaskComposerRowIds;
 
 
   final  List<TabUiModel> _tabs;
@@ -214,6 +217,15 @@ class _HomeState implements HomeState {
     if (_tabs is EqualUnmodifiableListView) return _tabs;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_tabs);
+  }
+
+  @override@JsonKey() final  int subtaskComposerTabIndex;
+  @override final  String? subtaskComposerTaskId;
+  final  List<String> _subtaskComposerRowIds;
+  @override@JsonKey() List<String> get subtaskComposerRowIds {
+    if (_subtaskComposerRowIds is EqualUnmodifiableListView) return _subtaskComposerRowIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_subtaskComposerRowIds);
   }
 
 
@@ -227,16 +239,16 @@ class _HomeState implements HomeState {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&const DeepCollectionEquality().equals(other._tabs, _tabs));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&const DeepCollectionEquality().equals(other._tabs, _tabs)&&(identical(other.subtaskComposerTabIndex, subtaskComposerTabIndex) || other.subtaskComposerTabIndex == subtaskComposerTabIndex)&&(identical(other.subtaskComposerTaskId, subtaskComposerTaskId) || other.subtaskComposerTaskId == subtaskComposerTaskId)&&const DeepCollectionEquality().equals(other._subtaskComposerRowIds, _subtaskComposerRowIds));
   }
 
 
   @override
-  int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tabs));
+  int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tabs),subtaskComposerTabIndex,subtaskComposerTaskId,const DeepCollectionEquality().hash(_subtaskComposerRowIds));
 
   @override
   String toString() {
-    return 'HomeState(tabs: $tabs)';
+    return 'HomeState(tabs: $tabs, subtaskComposerTabIndex: $subtaskComposerTabIndex, subtaskComposerTaskId: $subtaskComposerTaskId, subtaskComposerRowIds: $subtaskComposerRowIds)';
   }
 
 
@@ -247,7 +259,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
   @override @useResult
   $Res call({
-    List<TabUiModel> tabs
+    List<TabUiModel> tabs, int subtaskComposerTabIndex, String? subtaskComposerTaskId, List<String> subtaskComposerRowIds
   });
 
 
@@ -264,10 +276,13 @@ class __$HomeStateCopyWithImpl<$Res>
 
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
-  @override @pragma('vm:prefer-inline') $Res call({Object? tabs = null,}) {
+  @override @pragma('vm:prefer-inline') $Res call({Object? tabs = null,Object? subtaskComposerTabIndex = null,Object? subtaskComposerTaskId = freezed,Object? subtaskComposerRowIds = null,}) {
     return _then(_HomeState(
       tabs: null == tabs ? _self._tabs : tabs // ignore: cast_nullable_to_non_nullable
-      as List<TabUiModel>,
+      as List<TabUiModel>,subtaskComposerTabIndex: null == subtaskComposerTabIndex ? _self.subtaskComposerTabIndex : subtaskComposerTabIndex // ignore: cast_nullable_to_non_nullable
+    as int,subtaskComposerTaskId: freezed == subtaskComposerTaskId ? _self.subtaskComposerTaskId : subtaskComposerTaskId // ignore: cast_nullable_to_non_nullable
+    as String?,subtaskComposerRowIds: null == subtaskComposerRowIds ? _self._subtaskComposerRowIds : subtaskComposerRowIds // ignore: cast_nullable_to_non_nullable
+    as List<String>,
     ));
   }
 

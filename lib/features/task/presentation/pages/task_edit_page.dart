@@ -4,23 +4,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/task_ui_model.dart';
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
+import '../widgets/edit_task/info_action_row.dart';
+import '../widgets/edit_task/info_chip_row.dart';
+import '../widgets/edit_task/info_row.dart';
+import '../widgets/edit_task/sub_task.dart';
 
 class TaskEditPage extends StatelessWidget {
-  const TaskEditPage({
-    super.key,
-    required this.tabIndex,
-    required this.taskId,
-  });
+  const TaskEditPage({super.key, required this.tabIndex, required this.taskId});
 
   final int tabIndex;
   final String taskId;
 
   @override
   Widget build(BuildContext context) {
-    final task = _findTask(context.watch<HomeCubit>().state);
+    final state = context.watch<HomeCubit>().state;
+    final task = _findTask(state);
     final title = task?.title ?? '';
     final isFavourite = task?.isFavourite ?? false;
     final isCompleted = task?.isCompleted ?? false;
+    final subTaskRowIds =
+    state.subtaskComposerTabIndex == tabIndex &&
+        state.subtaskComposerTaskId == taskId
+        ? state.subtaskComposerRowIds
+        : const <String>[];
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -36,12 +42,14 @@ class TaskEditPage extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         _saveTitle(context, title);
+        // context.read<HomeCubit>().hideSubtaskComposer();
         Navigator.of(context).pop();
       },
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(
             onPressed: () {
+              // context.read<HomeCubit>().hideSubtaskComposer();
               Navigator.of(context).pop();
             },
           ),
@@ -73,44 +81,79 @@ class TaskEditPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextFormField(
-                  key: ValueKey(taskId),
-                  initialValue: title,
-                  onChanged: (value) {
-                    context.read<HomeCubit>().updateTaskTitle(
-                      tabIndex: tabIndex,
-                      taskId: taskId,
-                      title: value,
-                    );
-                  },
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          key: ValueKey(taskId),
+                          initialValue: title,
+                          onChanged: (value) {
+                            context.read<HomeCubit>().updateTaskTitle(
+                              tabIndex: tabIndex,
+                              taskId: taskId,
+                              title: value,
+                            );
+                          },
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Enter title',
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        InfoRow(
+                          icon: Icons.subject,
+                          label: 'Add details',
+                          color: subtle,
+                        ),
+                        const SizedBox(height: 18),
+                        InfoChipRow(
+                          icon: Icons.schedule,
+                          text: 'Tue, Mar 17, 4 PM',
+                          color: subtle,
+                        ),
+                        const SizedBox(height: 12),
+                        InfoChipRow(
+                          icon: Icons.repeat,
+                          text: 'Weekly on Tuesday, 4 PM',
+                          color: subtle,
+                          withClose: true,
+                        ),
+                        const SizedBox(height: 6),
+                        for (final rowId in subTaskRowIds) ...[
+                          const SizedBox(height: 10),
+                          SubTask(
+                            key: ValueKey(rowId),
+                            color: subtle,
+                            onClose: () {
+                              context.read<HomeCubit>().closeSubtask(
+                                rowId,
+                              );
+                            },
+                          ),
+                        ],
+                        if (subTaskRowIds.isNotEmpty)
+                          const SizedBox(height: 6),
+                        InfoActionRow(
+                          icon: Icons.add,
+                          label: 'Add subtasks',
+                          color: subtle,
+                          onTap: () {
+                            context.read<HomeCubit>().createSubtask(
+                              tabIndex: tabIndex,
+                              taskId: taskId,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Enter title',
-                  ),
                 ),
-                const SizedBox(height: 24),
-                _InfoRow(
-                  icon: Icons.subject,
-                  label: 'Add details',
-                  color: subtle,
-                ),
-                const SizedBox(height: 18),
-                _InfoChipRow(
-                  icon: Icons.schedule,
-                  text: 'Tue, Mar 17, 4 PM',
-                  color: subtle,
-                ),
-                const SizedBox(height: 12),
-                _InfoChipRow(
-                  icon: Icons.repeat,
-                  text: 'Weekly on Tuesday, 4 PM',
-                  color: subtle,
-                  withClose: true,
-                ),
-                const Spacer(),
+                const SizedBox(height: 16),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: FilledButton(
@@ -147,75 +190,5 @@ class TaskEditPage extends StatelessWidget {
     final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
     if (taskIndex < 0) return null;
     return tab.tasks[taskIndex];
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: color),
-        const SizedBox(width: 14),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: color),
-        ),
-      ],
-    );
-  }
-}
-
-class _InfoChipRow extends StatelessWidget {
-  const _InfoChipRow({
-    required this.icon,
-    required this.text,
-    required this.color,
-    this.withClose = false,
-  });
-
-  final IconData icon;
-  final String text;
-  final Color color;
-  final bool withClose;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: color),
-        const SizedBox(width: 14),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withValues(alpha: 0.45)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                text,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color),
-              ),
-              if (withClose) ...[
-                const SizedBox(width: 8),
-                Icon(Icons.close, size: 16, color: color),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
   }
 }

@@ -201,6 +201,59 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(tabs: nextTabs));
   }
 
+  void createSubtask({required int tabIndex, required String taskId}) {
+    if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
+    final tab = state.tabs[tabIndex];
+    final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
+    if (taskIndex < 0) return;
+    final newId = '${DateTime.now().microsecondsSinceEpoch}';
+    final sameTask = state.subtaskComposerTabIndex == tabIndex &&
+        state.subtaskComposerTaskId == taskId;
+    final nextIds = sameTask
+        ? [...state.subtaskComposerRowIds, newId]
+        : <String>[newId];
+    emit(
+      state.copyWith(
+        subtaskComposerTabIndex: tabIndex,
+        subtaskComposerTaskId: taskId,
+        subtaskComposerRowIds: nextIds,
+      ),
+    );
+  }
+
+  void closeSubtask(String rowId) {
+    if (!state.subtaskComposerRowIds.contains(rowId)) return;
+    final nextIds = state.subtaskComposerRowIds
+        .where((id) => id != rowId)
+        .toList(growable: false);
+    if (nextIds.isEmpty) {
+      emit(
+        state.copyWith(
+          subtaskComposerTabIndex: -1,
+          subtaskComposerTaskId: null,
+          subtaskComposerRowIds: const [],
+        ),
+      );
+    } else {
+      emit(state.copyWith(subtaskComposerRowIds: nextIds));
+    }
+  }
+
+  void hideSubtaskComposer() {
+    if (state.subtaskComposerTaskId == null &&
+        state.subtaskComposerTabIndex < 0 &&
+        state.subtaskComposerRowIds.isEmpty) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        subtaskComposerTabIndex: -1,
+        subtaskComposerTaskId: null,
+        subtaskComposerRowIds: const [],
+      ),
+    );
+  }
+
   Future<void> deleteTab({required int tabIndex}) async {
     if (tabIndex < 0 || tabIndex >= state.tabs.length) return;
     final tab = state.tabs[tabIndex];

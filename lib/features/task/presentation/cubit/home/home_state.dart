@@ -6,7 +6,12 @@ part 'home_state.freezed.dart';
 
 @freezed
 abstract class HomeState with _$HomeState {
-  const factory HomeState({required List<TabUiModel> tabs}) = _HomeState;
+  const factory HomeState({
+    required List<TabUiModel> tabs,
+    @Default(-1) int subtaskComposerTabIndex,
+    String? subtaskComposerTaskId,
+    @Default(<String>[]) List<String> subtaskComposerRowIds,
+  }) = _HomeState;
 
   factory HomeState.init() {
     return HomeState(
