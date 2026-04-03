@@ -9,9 +9,13 @@ import '../../../data/models/task_ui_model.dart';
 import '../../../data/repositories/task_repository_impl.dart';
 import '../../../domain/usecases/get_task_tabs_usecase.dart';
 import '../../../domain/usecases/delete_completed_tasks_usecase.dart';
+import '../../../domain/usecases/delete_subtask_usecase.dart';
 import '../../../domain/usecases/delete_task_tab_usecase.dart';
+import '../../../domain/usecases/get_subtasks_for_tabs_usecase.dart';
+import '../../../domain/usecases/save_subtask_usecase.dart';
 import '../../../domain/usecases/save_task_usecase.dart';
 import '../../../domain/usecases/save_task_tab_usecase.dart';
+import '../../../domain/usecases/update_subtask_usecase.dart';
 import '../../../domain/usecases/update_task_tab_usecase.dart';
 import 'home_state.dart';
 
@@ -19,7 +23,11 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     SaveTaskTabUseCase? saveTaskTabUseCase,
     GetTaskTabsUseCase? getTaskTabsUseCase,
+    GetSubTasksForTabsUseCase? getSubTasksForTabsUseCase,
     SaveTaskUseCase? saveTaskUseCase,
+    SaveSubTaskUseCase? saveSubTaskUseCase,
+    UpdateSubTaskUseCase? updateSubTaskUseCase,
+    DeleteSubTaskUseCase? deleteSubTaskUseCase,
     DeleteCompletedTasksUseCase? deleteCompletedTasksUseCase,
     DeleteTaskTabUseCase? deleteTaskTabUseCase,
     UpdateTaskTabUseCase? updateTaskTabUseCase,
@@ -29,9 +37,23 @@ class HomeCubit extends Cubit<HomeState> {
         _getTaskTabsUseCase =
             getTaskTabsUseCase ??
                 GetTaskTabsUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _getSubTasksForTabsUseCase =
+            getSubTasksForTabsUseCase ??
+                GetSubTasksForTabsUseCase(
+                  TaskRepositoryImpl(LocalTaskDataSource()),
+                ),
         _saveTaskUseCase =
             saveTaskUseCase ??
                 SaveTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _saveSubTaskUseCase =
+            saveSubTaskUseCase ??
+                SaveSubTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _updateSubTaskUseCase =
+            updateSubTaskUseCase ??
+                UpdateSubTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
+        _deleteSubTaskUseCase =
+            deleteSubTaskUseCase ??
+                DeleteSubTaskUseCase(TaskRepositoryImpl(LocalTaskDataSource())),
         _deleteCompletedTasksUseCase =
             deleteCompletedTasksUseCase ??
                 DeleteCompletedTasksUseCase(
@@ -51,7 +73,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   final SaveTaskTabUseCase _saveTaskTabUseCase;
   final GetTaskTabsUseCase _getTaskTabsUseCase;
+  final GetSubTasksForTabsUseCase _getSubTasksForTabsUseCase;
   final SaveTaskUseCase _saveTaskUseCase;
+  final SaveSubTaskUseCase _saveSubTaskUseCase;
+  final UpdateSubTaskUseCase _updateSubTaskUseCase;
+  final DeleteSubTaskUseCase _deleteSubTaskUseCase;
   final DeleteCompletedTasksUseCase _deleteCompletedTasksUseCase;
   final DeleteTaskTabUseCase _deleteTaskTabUseCase;
   final UpdateTaskTabUseCase _updateTaskTabUseCase;
@@ -214,22 +240,42 @@ class HomeCubit extends Cubit<HomeState> {
       subTaskId: newId,
       value: '',
     );
+    if (tab.id != null) {
+      unawaited(_saveSubTaskUseCase(taskId: taskId, subTask: newSubTask));
+    }
     emit(state.copyWith(subTasks: [...state.subTasks, newSubTask]));
   }
 
   void updateSubtaskValue({required String rowId, required String value}) {
     final index = state.subTasks.indexWhere((s) => s.subTaskId == rowId);
     if (index < 0) return;
+    final sub = state.subTasks[index];
+    final tabIndex = sub.tabIndex;
+    if (tabIndex >= 0 && tabIndex < state.tabs.length) {
+      final tab = state.tabs[tabIndex];
+      if (tab.id != null) {
+        unawaited(_updateSubTaskUseCase(subTaskId: rowId, value: value));
+      }
+    }
     final next = List<SubTask>.from(state.subTasks);
     next[index] = next[index].copyWith(value: value);
     emit(state.copyWith(subTasks: next));
   }
 
   void closeSubtask(String subTaskId) {
+    final index = state.subTasks.indexWhere((s) => s.subTaskId == subTaskId);
+    if (index < 0) return;
+    final sub = state.subTasks[index];
+    final tabIndex = sub.tabIndex;
+    if (tabIndex >= 0 && tabIndex < state.tabs.length) {
+      final tab = state.tabs[tabIndex];
+      if (tab.id != null) {
+        unawaited(_deleteSubTaskUseCase(subTaskId: subTaskId));
+      }
+    }
     final next = state.subTasks
         .where((s) => s.subTaskId != subTaskId)
         .toList(growable: false);
-    if (next.length == state.subTasks.length) return;
     emit(state.copyWith(subTasks: next));
   }
 
@@ -247,6 +293,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> _loadTabs() async {
     final savedTabs = await _getTaskTabsUseCase();
     if (savedTabs.isEmpty) return;
-    emit(state.copyWith(tabs: savedTabs));
+    final subTasks = await _getSubTasksForTabsUseCase(savedTabs);
+    emit(state.copyWith(tabs: savedTabs, subTasks: subTasks));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
+import '../models/sub_task.dart';
 import '../models/tab_ui_model.dart';
 import '../models/task_ui_model.dart';
 
@@ -15,6 +16,10 @@ class LocalTaskDataSource {
   static const _taskColumnTabId = 'tab_id';
   static const _taskColumnIsFavourite = 'is_favourite';
   static const _taskColumnIsCompleted = 'is_completed';
+  static const _subtasksTable = 'subtasks';
+  static const _subtaskColumnId = 'id';
+  static const _subtaskColumnTaskId = 'task_id';
+  static const _subtaskColumnValue = 'value';
 
   Database? _db;
 
@@ -24,7 +29,7 @@ class LocalTaskDataSource {
     final path = p.join(dbPath, _databaseName);
     _db = await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE $_tabsTable (
@@ -33,6 +38,7 @@ class LocalTaskDataSource {
           )
         ''');
         await _createTasksTable(db);
+        await _createSubtasksTable(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -50,6 +56,9 @@ class LocalTaskDataSource {
             ADD COLUMN $_taskColumnIsCompleted INTEGER NOT NULL DEFAULT 0
           ''');
         }
+        if (oldVersion < 5) {
+          await _createSubtasksTable(db);
+        }
       },
     );
     return _db!;
@@ -64,6 +73,17 @@ class LocalTaskDataSource {
         $_taskColumnIsFavourite INTEGER NOT NULL DEFAULT 0,
         $_taskColumnIsCompleted INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY ($_taskColumnTabId) REFERENCES $_tabsTable ($_tabColumnId)
+      )
+    ''');
+  }
+
+  Future<void> _createSubtasksTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $_subtasksTable (
+        $_subtaskColumnId TEXT PRIMARY KEY,
+        $_subtaskColumnTaskId TEXT NOT NULL,
+        $_subtaskColumnValue TEXT NOT NULL DEFAULT '',
+        FOREIGN KEY ($_subtaskColumnTaskId) REFERENCES $_tasksTable ($_taskColumnId)
       )
     ''');
   }
@@ -142,6 +162,16 @@ class LocalTaskDataSource {
 
   Future<void> deleteCompletedTasks({required int tabId}) async {
     final db = await _database();
+    await db.rawDelete(
+      '''
+      DELETE FROM $_subtasksTable
+      WHERE $_subtaskColumnTaskId IN (
+        SELECT $_taskColumnId FROM $_tasksTable
+        WHERE $_taskColumnTabId = ? AND $_taskColumnIsCompleted = ?
+      )
+      ''',
+      [tabId, 1],
+    );
     await db.delete(
       _tasksTable,
       where: '$_taskColumnTabId = ? AND $_taskColumnIsCompleted = ?',
@@ -149,10 +179,98 @@ class LocalTaskDataSource {
     );
   }
 
+  Future<void> saveSubTask({
+    required String taskId,
+    required SubTask subTask,
+  }) async {
+    final sid = subTask.subTaskId;
+    if (sid == null) return;
+    final db = await _database();
+    await db.insert(_subtasksTable, {
+      _subtaskColumnId: sid,
+      _subtaskColumnTaskId: taskId,
+      _subtaskColumnValue: subTask.value,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> updateSubTaskValue({
+    required String subTaskId,
+    required String value,
+  }) async {
+    final db = await _database();
+    await db.update(
+      _subtasksTable,
+      {_subtaskColumnValue: value},
+      where: '$_subtaskColumnId = ?',
+      whereArgs: [subTaskId],
+    );
+  }
+
+  Future<void> deleteSubTask({required String subTaskId}) async {
+    final db = await _database();
+    await db.delete(
+      _subtasksTable,
+      where: '$_subtaskColumnId = ?',
+      whereArgs: [subTaskId],
+    );
+  }
+
+  Future<List<SubTask>> getSubTasksForTabs(List<TabUiModel> tabs) async {
+    if (tabs.isEmpty) return const [];
+    final tabIdToIndex = <int, int>{};
+    for (var i = 0; i < tabs.length; i++) {
+      final id = tabs[i].id;
+      if (id != null) tabIdToIndex[id] = i;
+    }
+    if (tabIdToIndex.isEmpty) return const [];
+
+    final db = await _database();
+    final rows = await db.rawQuery(
+      '''
+      SELECT s.$_subtaskColumnId AS sid,
+             s.$_subtaskColumnTaskId AS stask_id,
+             s.$_subtaskColumnValue AS svalue,
+             t.$_taskColumnTabId AS tab_id
+      FROM $_subtasksTable s
+      INNER JOIN $_tasksTable t ON s.$_subtaskColumnTaskId = t.$_taskColumnId
+      ''',
+    );
+
+    final out = <SubTask>[];
+    for (final row in rows) {
+      final tabId = row['tab_id'] as int?;
+      final taskId = row['stask_id'] as String?;
+      final sid = row['sid'] as String?;
+      if (tabId == null || taskId == null || sid == null) continue;
+      final tabIndex = tabIdToIndex[tabId];
+      if (tabIndex == null) continue;
+      out.add(
+        SubTask(
+          tabIndex: tabIndex,
+          taskId: taskId,
+          subTaskId: sid,
+          value: (row['svalue'] as String?) ?? '',
+        ),
+      );
+    }
+    return out;
+  }
+
   Future<void> deleteTaskTab({required int tabId}) async {
     final db = await _database();
 
-    // Delete tasks first to avoid foreign-key violations (no ON DELETE CASCADE).
+    await db.rawDelete(
+      '''
+      DELETE FROM $_subtasksTable
+      WHERE $_subtaskColumnTaskId IN (
+        SELECT $_taskColumnId FROM $_tasksTable
+        WHERE $_taskColumnTabId = ?
+      )
+      ''',
+      [tabId],
+    );
+
+    // Delete tasks after subtasks to avoid foreign-key violations.
     await db.delete(
       _tasksTable,
       where: '$_taskColumnTabId = ?',
