@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/models/sub_task.dart';
 import '../../../data/models/task_ui_model.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../pages/task_edit_page.dart';
+
+List<SubTask> _visibleSubtasksForTask(String taskId, List<SubTask> subTasks) {
+  return [
+    for (final s in subTasks)
+      if (s.taskId == taskId && s.value.trim().isNotEmpty) s,
+  ];
+}
 
 class TaskListCard extends StatelessWidget {
   const TaskListCard({
     super.key,
     required this.title,
     required this.tasks,
+    this.subTasks = const [],
     this.onRenameList,
     this.onDeleteList,
     this.onDeleteAllCompleted,
@@ -21,6 +30,7 @@ class TaskListCard extends StatelessWidget {
 
   final String title;
   final List<TaskUiModel> tasks;
+  final List<SubTask> subTasks;
   final VoidCallback? onRenameList;
   final VoidCallback? onDeleteList;
   final VoidCallback? onDeleteAllCompleted;
@@ -31,6 +41,7 @@ class TaskListCard extends StatelessWidget {
 
   static const _darkCard = Color(0xFF251812);
   static const _darkAccent = Color(0xFFE8C4B8);
+  static const _kLeadingSlot = 48.0;
 
   @override
   Widget build(BuildContext context) {
@@ -100,69 +111,187 @@ class TaskListCard extends StatelessWidget {
             Expanded(
               child: tasks.isEmpty
                   ? _EmptyTasksBody(subtle: subtle, theme: theme)
-                  : ListView.builder(
+                  : ListView(
                 padding: const EdgeInsets.only(bottom: 16),
-                itemCount: tasks.length,
-                itemBuilder: (context, index) {
-                  final t = tasks[index];
-                  return ListTile(
-                    onTap: () {
-                      Navigator.of(context).push<void>(
-                        MaterialPageRoute<void>(
-                          builder: (_) => BlocProvider.value(
-                            value: context.read<HomeCubit>(),
-                            child: TaskEditPage(
-                              tabIndex: tabIndex,
-                              taskId: t.id,
+                children: [
+                  for (final t in tasks) ...[
+                    _TaskListRow(
+                      subtle: subtle,
+                      theme: theme,
+                      indent: 0,
+                      title: t.title,
+                      isCompleted: t.isCompleted,
+                      isFavourite: t.isFavourite,
+                      isSubtask: false,
+                      onRowTap: () {
+                        Navigator.of(context).push<void>(
+                          MaterialPageRoute<void>(
+                            builder: (_) => BlocProvider.value(
+                              value: context.read<HomeCubit>(),
+                              child: TaskEditPage(
+                                tabIndex: tabIndex,
+                                taskId: t.id,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                    title: Text(
-                      t.title,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        decoration: t.isCompleted
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                        color: t.isCompleted
-                            ? subtle
-                            : theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    leading: IconButton(
-                      onPressed: () {
+                        );
+                      },
+                      onToggleCompleted: () {
                         context.read<HomeCubit>().toggleTaskCompleted(
                           tabIndex: tabIndex,
                           taskId: t.id,
                         );
                       },
-                      icon: Icon(
-                        t.isCompleted
-                            ? Icons.check_circle
-                            : Icons.radio_button_unchecked,
-                        color: t.isCompleted
-                            ? theme.colorScheme.primary
-                            : subtle,
-                      ),
-                    ),
-                    trailing: IconButton(
-                      onPressed: () {
+                      onToggleFavourite: () {
                         context.read<HomeCubit>().toggleTaskFavourite(
                           tabIndex: tabIndex,
                           taskId: t.id,
                         );
                       },
-                      icon: Icon(
-                        t.isFavourite ? Icons.star : Icons.star_border,
-                        color: t.isFavourite ? Colors.amber : subtle,
-                      ),
                     ),
-                  );
-                },
+                    for (final st in _visibleSubtasksForTask(
+                      t.id,
+                      subTasks,
+                    ))
+                      _TaskListRow(
+                        subtle: subtle,
+                        theme: theme,
+                        indent: _kLeadingSlot,
+                        title: st.value.trim(),
+                        isCompleted: false,
+                        isFavourite: false,
+                        isSubtask: true,
+                        onRowTap: () {
+                          Navigator.of(context).push<void>(
+                            MaterialPageRoute<void>(
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<HomeCubit>(),
+                                child: TaskEditPage(
+                                  tabIndex: tabIndex,
+                                  taskId: t.id,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        onToggleCompleted: null,
+                        onToggleFavourite: null,
+                      ),
+                  ],
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TaskListRow extends StatelessWidget {
+  const _TaskListRow({
+    required this.subtle,
+    required this.theme,
+    required this.indent,
+    required this.title,
+    required this.isCompleted,
+    required this.isFavourite,
+    required this.isSubtask,
+    required this.onRowTap,
+    required this.onToggleCompleted,
+    required this.onToggleFavourite,
+  });
+
+  final Color subtle;
+  final ThemeData theme;
+  final double indent;
+  final String title;
+  final bool isCompleted;
+  final bool isFavourite;
+  final bool isSubtask;
+  final VoidCallback onRowTap;
+  final VoidCallback? onToggleCompleted;
+  final VoidCallback? onToggleFavourite;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = theme.textTheme.bodyLarge?.copyWith(
+      decoration: isSubtask
+          ? TextDecoration.none
+          : (isCompleted
+          ? TextDecoration.lineThrough
+          : TextDecoration.none),
+      color: isSubtask
+          ? theme.colorScheme.onSurface
+          : (isCompleted ? subtle : theme.colorScheme.onSurface),
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onRowTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(width: indent),
+              SizedBox(
+                width: TaskListCard._kLeadingSlot,
+                child: Center(
+                  child: isSubtask
+                      ? Icon(
+                    Icons.radio_button_unchecked,
+                    size: 24,
+                    color: subtle,
+                  )
+                      : IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: TaskListCard._kLeadingSlot,
+                      minHeight: TaskListCard._kLeadingSlot,
+                    ),
+                    onPressed: onToggleCompleted,
+                    icon: Icon(
+                      isCompleted
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      color: isCompleted
+                          ? theme.colorScheme.primary
+                          : subtle,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyle,
+                ),
+              ),
+              SizedBox(
+                width: TaskListCard._kLeadingSlot,
+                child: Center(
+                  child: isSubtask
+                      ? Icon(Icons.star_border, size: 24, color: subtle)
+                      : IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: TaskListCard._kLeadingSlot,
+                      minHeight: TaskListCard._kLeadingSlot,
+                    ),
+                    onPressed: onToggleFavourite,
+                    icon: Icon(
+                      isFavourite ? Icons.star : Icons.star_border,
+                      color: isFavourite ? Colors.amber : subtle,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

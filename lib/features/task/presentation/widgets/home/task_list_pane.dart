@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_todo_clone/features/task/presentation/widgets/home/task_list_card.dart';
 
+import '../../../data/models/sub_task.dart';
 import '../../../data/models/task_ui_model.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
@@ -9,6 +10,16 @@ import '../../pages/add_task_list_page.dart';
 import '../../pages/task_edit_page.dart';
 
 typedef _FavouriteItem = ({int tabIndex, TaskUiModel task});
+
+bool _sameSubTasksForTab(List<SubTask> a, List<SubTask> b, int tabIndex) {
+  final sa = a.where((s) => s.tabIndex == tabIndex).toList();
+  final sb = b.where((s) => s.tabIndex == tabIndex).toList();
+  if (sa.length != sb.length) return false;
+  for (var i = 0; i < sa.length; i++) {
+    if (sa[i] != sb[i]) return false;
+  }
+  return true;
+}
 
 class FavouriteTaskListPane extends StatelessWidget {
   const FavouriteTaskListPane({super.key});
@@ -93,7 +104,8 @@ class TaskListPane extends StatelessWidget {
         if (prev.tabs.length != curr.tabs.length) return true;
         if (tabIndex < 0 || tabIndex >= curr.tabs.length) return true;
         if (tabIndex >= prev.tabs.length) return true;
-        return prev.tabs[tabIndex] != curr.tabs[tabIndex];
+        if (prev.tabs[tabIndex] != curr.tabs[tabIndex]) return true;
+        return !_sameSubTasksForTab(prev.subTasks, curr.subTasks, tabIndex);
       },
       builder: (context, state) {
         if (tabIndex >= state.tabs.length) {
@@ -103,9 +115,13 @@ class TaskListPane extends StatelessWidget {
         final completedTaskCount = tab.tasks
             .where((task) => task.isCompleted)
             .length;
+        final subTasksForTab = state.subTasks
+            .where((s) => s.tabIndex == tabIndex)
+            .toList(growable: false);
         return TaskListCard(
           title: tab.tabName,
           tasks: tab.tasks,
+          subTasks: subTasksForTab,
           tabIndex: tabIndex,
           completedTaskCount: completedTaskCount,
           onDeleteAllCompleted: () {
