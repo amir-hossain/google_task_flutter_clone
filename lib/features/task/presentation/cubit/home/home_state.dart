@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../data/models/sub_task.dart';
 import '../../../data/models/tab_ui_model.dart';
 
 part 'home_state.freezed.dart';
@@ -8,9 +9,7 @@ part 'home_state.freezed.dart';
 abstract class HomeState with _$HomeState {
   const factory HomeState({
     required List<TabUiModel> tabs,
-    @Default(-1) int subtaskComposerTabIndex,
-    String? subtaskComposerTaskId,
-    @Default(<String>[]) List<String> subtaskComposerRowIds,
+    @Default([]) List<SubTask> subTasks,
   }) = _HomeState;
 
   factory HomeState.init() {

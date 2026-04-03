@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/datasources/local_task_datasource.dart';
+import '../../../data/models/sub_task.dart';
 import '../../../data/models/tab_ui_model.dart';
 import '../../../data/models/task_ui_model.dart';
 import '../../../data/repositories/task_repository_impl.dart';
@@ -207,51 +208,29 @@ class HomeCubit extends Cubit<HomeState> {
     final taskIndex = tab.tasks.indexWhere((task) => task.id == taskId);
     if (taskIndex < 0) return;
     final newId = '${DateTime.now().microsecondsSinceEpoch}';
-    final sameTask = state.subtaskComposerTabIndex == tabIndex &&
-        state.subtaskComposerTaskId == taskId;
-    final nextIds = sameTask
-        ? [...state.subtaskComposerRowIds, newId]
-        : <String>[newId];
-    emit(
-      state.copyWith(
-        subtaskComposerTabIndex: tabIndex,
-        subtaskComposerTaskId: taskId,
-        subtaskComposerRowIds: nextIds,
-      ),
+    final newSubTask = SubTask(
+      tabIndex: tabIndex,
+      taskId: taskId,
+      subTaskId: newId,
+      value: '',
     );
+    emit(state.copyWith(subTasks: [...state.subTasks, newSubTask]));
   }
 
-  void closeSubtask(String rowId) {
-    if (!state.subtaskComposerRowIds.contains(rowId)) return;
-    final nextIds = state.subtaskComposerRowIds
-        .where((id) => id != rowId)
+  void updateSubtaskValue({required String rowId, required String value}) {
+    final index = state.subTasks.indexWhere((s) => s.subTaskId == rowId);
+    if (index < 0) return;
+    final next = List<SubTask>.from(state.subTasks);
+    next[index] = next[index].copyWith(value: value);
+    emit(state.copyWith(subTasks: next));
+  }
+
+  void closeSubtask(String subTaskId) {
+    final next = state.subTasks
+        .where((s) => s.subTaskId != subTaskId)
         .toList(growable: false);
-    if (nextIds.isEmpty) {
-      emit(
-        state.copyWith(
-          subtaskComposerTabIndex: -1,
-          subtaskComposerTaskId: null,
-          subtaskComposerRowIds: const [],
-        ),
-      );
-    } else {
-      emit(state.copyWith(subtaskComposerRowIds: nextIds));
-    }
-  }
-
-  void hideSubtaskComposer() {
-    if (state.subtaskComposerTaskId == null &&
-        state.subtaskComposerTabIndex < 0 &&
-        state.subtaskComposerRowIds.isEmpty) {
-      return;
-    }
-    emit(
-      state.copyWith(
-        subtaskComposerTabIndex: -1,
-        subtaskComposerTaskId: null,
-        subtaskComposerRowIds: const [],
-      ),
-    );
+    if (next.length == state.subTasks.length) return;
+    emit(state.copyWith(subTasks: next));
   }
 
   Future<void> deleteTab({required int tabIndex}) async {
@@ -261,7 +240,6 @@ class HomeCubit extends Cubit<HomeState> {
     final nextTabs = List<TabUiModel>.from(state.tabs)..removeAt(tabIndex);
     emit(state.copyWith(tabs: nextTabs));
 
-    // Only persist saved tabs (those with a database id).
     if (tab.id == null) return;
     await _deleteTaskTabUseCase(tabId: tab.id!);
   }

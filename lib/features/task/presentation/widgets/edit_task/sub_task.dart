@@ -5,10 +5,14 @@ class SubTask extends StatelessWidget {
     super.key,
     required this.color,
     required this.onClose,
+    required this.value,
+    required this.onChanged,
   });
 
   final Color color;
   final VoidCallback onClose;
+  final String value;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,8 @@ class SubTask extends StatelessWidget {
         Icon(Icons.radio_button_unchecked, color: color, size: 28),
         const SizedBox(width: 14),
         Expanded(
-          child: TextField(
+          child: TextFormField(
+            initialValue: value,
             style: textStyle,
             cursorColor: color,
             decoration: InputDecoration(
@@ -35,6 +40,7 @@ class SubTask extends StatelessWidget {
               isDense: true,
               contentPadding: EdgeInsets.zero,
             ),
+            onChanged: onChanged,
           ),
         ),
         IconButton(

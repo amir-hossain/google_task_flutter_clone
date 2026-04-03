@@ -7,7 +7,7 @@ import '../cubit/home/home_state.dart';
 import '../widgets/edit_task/info_action_row.dart';
 import '../widgets/edit_task/info_chip_row.dart';
 import '../widgets/edit_task/info_row.dart';
-import '../widgets/edit_task/sub_task.dart';
+import '../widgets/edit_task/sub_task.dart' as subtask_ui;
 
 class TaskEditPage extends StatelessWidget {
   const TaskEditPage({super.key, required this.tabIndex, required this.taskId});
@@ -22,11 +22,11 @@ class TaskEditPage extends StatelessWidget {
     final title = task?.title ?? '';
     final isFavourite = task?.isFavourite ?? false;
     final isCompleted = task?.isCompleted ?? false;
-    final subTaskRowIds =
-    state.subtaskComposerTabIndex == tabIndex &&
-        state.subtaskComposerTaskId == taskId
-        ? state.subtaskComposerRowIds
-        : const <String>[];
+    final subTasksForTask = state.subTasks
+        .where(
+          (s) => s.tabIndex == tabIndex && s.taskId == taskId,
+    )
+        .toList(growable: false);
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -124,19 +124,26 @@ class TaskEditPage extends StatelessWidget {
                           withClose: true,
                         ),
                         const SizedBox(height: 6),
-                        for (final rowId in subTaskRowIds) ...[
+                        for (final row in subTasksForTask) ...[
                           const SizedBox(height: 10),
-                          SubTask(
-                            key: ValueKey(rowId),
+                          subtask_ui.SubTask(
+                            key: ValueKey(row.subTaskId),
                             color: subtle,
+                            value: row.value,
+                            onChanged: (value) {
+                              context.read<HomeCubit>().updateSubtaskValue(
+                                rowId: row.subTaskId!,
+                                value: value,
+                              );
+                            },
                             onClose: () {
                               context.read<HomeCubit>().closeSubtask(
-                                rowId,
+                                row.subTaskId!,
                               );
                             },
                           ),
                         ],
-                        if (subTaskRowIds.isNotEmpty)
+                        if (subTasksForTask.isNotEmpty)
                           const SizedBox(height: 6),
                         InfoActionRow(
                           icon: Icons.add,
